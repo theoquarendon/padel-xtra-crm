@@ -4,3 +4,6 @@ dist/
 *.local
 client/dist/
 server/dist/
+
+.vercel
+.env.seed
