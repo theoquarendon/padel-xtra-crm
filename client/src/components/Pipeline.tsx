@@ -17,7 +17,16 @@ interface StageConfig {
   color: string;
 }
 
-const STAGES: StageConfig[] = PIPELINE_STAGES.map(name => ({
+const COLOR_PALETTE = [
+  '#64748b', '#3b82f6', '#8b5cf6', '#f59e0b', '#f97316',
+  '#06b6d4', '#2d8653', '#94a3b8', '#ec4899', '#10b981',
+];
+
+function pickColor(existing: string[]): string {
+  return COLOR_PALETTE.find(c => !existing.includes(c)) ?? COLOR_PALETTE[0];
+}
+
+const DEFAULT_STAGES: StageConfig[] = PIPELINE_STAGES.map(name => ({
   name,
   color: STAGE_COLOR[name] ?? '#64748b',
 }));
@@ -30,11 +39,40 @@ const DEAL_TYPE_STYLE: Record<string, { bg: string; text: string; border: string
   'Design & Build': { bg: '#fef3c7', text: '#78350f', border: '#fcd34d' },
 };
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+function getDtStyle(dealType: string) {
+  return DEAL_TYPE_STYLE[dealType] ?? { bg: '#f1f5f9', text: '#475569', border: '#cbd5e1' };
+}
 
-function fmtNum(s: string): string {
+// ─── Formatters ───────────────────────────────────────────────────────────────
+
+function fmtPsf(s: string): string {
+  const n = parseFloat(s.replace(/[^\d.]/g, ''));
+  if (isNaN(n)) return s;
+  return n.toLocaleString('en-GB', { maximumFractionDigits: 2 });
+}
+
+function fmtInt(s: string): string {
+  const n = Math.round(parseFloat(s.replace(/[^\d.]/g, '')));
+  if (isNaN(n)) return s;
+  return n.toLocaleString('en-GB');
+}
+
+function fmtSqFt(s: string): string {
   const n = parseInt(s.replace(/[^\d]/g, ''), 10);
   return isNaN(n) ? s : n.toLocaleString('en-GB');
+}
+
+function daysAgo(dateStr: string): string {
+  if (!dateStr) return '';
+  const date = new Date(dateStr);
+  if (isNaN(date.getTime())) return '';
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const diff = Math.floor((today.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
+  if (diff === 0) return 'today';
+  if (diff === 1) return '1 day ago';
+  if (diff < 0) return `in ${-diff} day${-diff !== 1 ? 's' : ''}`;
+  return `${diff} days ago`;
 }
 
 // ─── Property card ────────────────────────────────────────────────────────────
@@ -54,7 +92,7 @@ function PropertyCard({
   onEdit: (p: Property) => void;
   onDelete: (id: string) => void;
 }) {
-  const dtStyle = DEAL_TYPE_STYLE[property.dealType];
+  const dtStyle = getDtStyle(property.dealType);
 
   return (
     <Draggable draggableId={property.id} index={index}>
@@ -79,20 +117,20 @@ function PropertyCard({
                 onClick={e => { e.stopPropagation(); onDelete(property.id); }}
                 className="opacity-100 md:opacity-0 md:group-hover:opacity-100 w-6 h-6 flex items-center justify-center text-slate-300 hover:text-red-400 text-lg leading-none flex-shrink-0 transition-opacity -mt-0.5"
                 title="Delete"
-              >
-                ×
-              </button>
+              >×</button>
             </div>
 
             {/* Location */}
             {property.location && (
-              <p className="text-[11px] text-slate-400 mt-0.5 truncate">{property.location}</p>
+              <p className="text-[11px] text-slate-400 mt-0.5 truncate">
+                <span className="text-slate-300 mr-0.5">📍</span>{property.location}
+              </p>
             )}
 
             {/* Deal type + size badges */}
             {(property.dealType || property.sizeSqFt) && (
               <div className="flex flex-wrap gap-1 mt-1.5">
-                {dtStyle && (
+                {property.dealType && (
                   <span
                     className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold border"
                     style={{ backgroundColor: dtStyle.bg, color: dtStyle.text, borderColor: dtStyle.border }}
@@ -102,7 +140,7 @@ function PropertyCard({
                 )}
                 {property.sizeSqFt && (
                   <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium border border-slate-200 bg-slate-50 text-slate-500">
-                    {fmtNum(property.sizeSqFt)} sq ft
+                    {fmtSqFt(property.sizeSqFt)} sq ft
                   </span>
                 )}
               </div>
@@ -120,23 +158,24 @@ function PropertyCard({
               <div className="flex flex-wrap gap-x-3 mt-1">
                 {property.rentPsf && (
                   <span className="text-[11px] text-slate-500">
-                    <span className="text-slate-400">£</span>{fmtNum(property.rentPsf)}<span className="text-slate-400"> psf</span>
+                    <span className="text-slate-400">£</span>{fmtPsf(property.rentPsf)}<span className="text-slate-400"> psf</span>
                   </span>
                 )}
                 {property.totalRentPa && (
                   <span className="text-[11px] text-slate-500">
-                    <span className="text-slate-400">£</span>{fmtNum(property.totalRentPa)}<span className="text-slate-400"> pa</span>
+                    <span className="text-slate-400">£</span>{fmtInt(property.totalRentPa)}<span className="text-slate-400"> pa</span>
                   </span>
                 )}
               </div>
             )}
 
-            {/* Notes */}
-            {property.notes && (
-              <p className="text-[11px] text-slate-400 mt-1.5 line-clamp-2 leading-relaxed">
-                {property.notes}
+            {/* Last contacted */}
+            {property.lastContacted && (
+              <p className="text-[11px] text-slate-400 mt-1">
+                <span className="mr-0.5">🗓</span>{daysAgo(property.lastContacted)}
               </p>
             )}
+
           </div>
         </div>
       )}
@@ -144,29 +183,106 @@ function PropertyCard({
   );
 }
 
+// ─── Deal type manager ────────────────────────────────────────────────────────
+
+function DealTypeManager({
+  dealTypes,
+  onUpdate,
+}: {
+  dealTypes: string[];
+  onUpdate: (types: string[]) => void;
+}) {
+  const [newType, setNewType] = useState('');
+
+  const add = () => {
+    const t = newType.trim();
+    if (!t || dealTypes.includes(t)) return;
+    onUpdate([...dealTypes, t]);
+    setNewType('');
+  };
+
+  return (
+    <div className="border border-slate-200 rounded-lg p-2 space-y-1 bg-slate-50">
+      {dealTypes.map(t => (
+        <div key={t} className="flex items-center justify-between gap-1">
+          <span className="text-xs text-slate-700 truncate">{t}</span>
+          <button
+            type="button"
+            onClick={() => onUpdate(dealTypes.filter(x => x !== t))}
+            className="flex-shrink-0 text-slate-300 hover:text-red-400 text-base leading-none transition-colors"
+          >×</button>
+        </div>
+      ))}
+      <div className="flex gap-1 pt-1 border-t border-slate-100">
+        <input
+          value={newType}
+          onChange={e => setNewType(e.target.value)}
+          onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); add(); } }}
+          placeholder="Add type..."
+          className="flex-1 text-xs border border-slate-200 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-padel-green focus:border-padel-green"
+        />
+        <button
+          type="button"
+          onClick={add}
+          className="w-6 h-6 flex items-center justify-center bg-padel-green hover:bg-padel-green-dark text-white rounded text-sm transition-colors"
+        >+</button>
+      </div>
+    </div>
+  );
+}
+
 // ─── Property form ─────────────────────────────────────────────────────────────
 
 const EMPTY_PROPERTY: Omit<Property, 'id'> = {
   name: '', location: '', stage: 'Identified', dealType: '',
-  sizeSqFt: '', landlord: '', rentPsf: '', totalRentPa: '', estRatesPa: '', notes: '',
+  sizeSqFt: '', landlord: '', rentPsf: '', totalRentPa: '', estRatesPa: '',
+  notes: '', lastContacted: '',
 };
 
 function PropertyForm({
   initial,
+  stages,
+  dealTypes,
   onSave,
   onCancel,
+  onUpdateDealTypes,
 }: {
   initial: Omit<Property, 'id'> & { id?: string };
+  stages: StageConfig[];
+  dealTypes: string[];
   onSave: (p: Omit<Property, 'id'> & { id?: string }) => void;
   onCancel: () => void;
+  onUpdateDealTypes: (types: string[]) => void;
 }) {
   const [form, setForm] = useState(initial);
-  const set = (k: keyof typeof form) =>
-    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
-      setForm(f => ({ ...f, [k]: e.target.value }));
+  const [managingDealTypes, setManagingDealTypes] = useState(false);
 
   const inputCls = 'w-full border border-slate-300 rounded-lg px-3 py-3 md:py-2 text-sm focus:outline-none focus:ring-2 focus:ring-padel-green focus:border-padel-green';
   const labelCls = 'block text-xs font-medium text-slate-600 mb-1';
+
+  const set = (k: keyof typeof form) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+      const value = e.target.value;
+      setForm(prev => {
+        const updated: typeof prev = { ...prev, [k]: value };
+        if (k === 'rentPsf' || k === 'sizeSqFt') {
+          const psf  = parseFloat((k === 'rentPsf'  ? value : prev.rentPsf).replace(/[^\d.]/g, ''));
+          const sqft = parseFloat((k === 'sizeSqFt' ? value : prev.sizeSqFt).replace(/[^\d.]/g, ''));
+          if (!isNaN(psf) && !isNaN(sqft) && psf > 0 && sqft > 0) {
+            const total = psf * sqft;
+            updated.totalRentPa = String(Math.round(total));
+            updated.estRatesPa  = String(Math.round(total * 0.2));
+          }
+        }
+        if (k === 'totalRentPa') {
+          const total = parseFloat(value.replace(/[^\d.]/g, ''));
+          if (!isNaN(total) && total > 0) {
+            updated.estRatesPa = String(Math.round(total * 0.2));
+          }
+        }
+        return updated;
+      });
+    };
 
   return (
     <form onSubmit={e => { e.preventDefault(); onSave(form); }} className="space-y-3">
@@ -190,22 +306,35 @@ function PropertyForm({
         <div>
           <label className={labelCls}>Stage</label>
           <select value={form.stage} onChange={set('stage')} className={inputCls}>
-            {PIPELINE_STAGES.map(s => <option key={s} value={s}>{s}</option>)}
+            {stages.map(s => <option key={s.name} value={s.name}>{s.name}</option>)}
           </select>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <div>
-          <label className={labelCls}>Deal Type</label>
-          <select value={form.dealType} onChange={set('dealType')} className={inputCls}>
-            <option value="">— Select —</option>
-            {DEAL_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
-          </select>
+          <div className="flex items-center justify-between mb-1">
+            <label className="text-xs font-medium text-slate-600">Deal Type</label>
+            <button
+              type="button"
+              onClick={() => setManagingDealTypes(o => !o)}
+              className="text-[10px] text-slate-400 hover:text-padel-green underline transition-colors"
+            >
+              {managingDealTypes ? 'Done' : 'Edit options'}
+            </button>
+          </div>
+          {managingDealTypes ? (
+            <DealTypeManager dealTypes={dealTypes} onUpdate={onUpdateDealTypes} />
+          ) : (
+            <select value={form.dealType} onChange={set('dealType')} className={inputCls}>
+              <option value="">— Select —</option>
+              {dealTypes.map(t => <option key={t} value={t}>{t}</option>)}
+            </select>
+          )}
         </div>
         <div>
           <label className={labelCls}>Size (sq ft)</label>
-          <input value={form.sizeSqFt} onChange={set('sizeSqFt')} className={inputCls} placeholder="e.g. 15,000" />
+          <input value={form.sizeSqFt} onChange={set('sizeSqFt')} className={inputCls} placeholder="e.g. 15000" />
         </div>
       </div>
 
@@ -217,15 +346,50 @@ function PropertyForm({
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <div>
           <label className={labelCls}>Rent psf (£)</label>
-          <input value={form.rentPsf} onChange={set('rentPsf')} className={inputCls} placeholder="0" />
+          <input
+            value={form.rentPsf}
+            onChange={set('rentPsf')}
+            className={inputCls}
+            placeholder="0.00"
+            inputMode="decimal"
+          />
         </div>
         <div>
           <label className={labelCls}>Total rent pa (£)</label>
-          <input value={form.totalRentPa} onChange={set('totalRentPa')} className={inputCls} placeholder="0" />
+          <input
+            value={form.totalRentPa}
+            onChange={set('totalRentPa')}
+            className={inputCls}
+            placeholder="auto"
+            inputMode="decimal"
+          />
         </div>
         <div>
           <label className={labelCls}>Est. rates pa (£)</label>
-          <input value={form.estRatesPa} onChange={set('estRatesPa')} className={inputCls} placeholder="0" />
+          <input
+            value={form.estRatesPa}
+            onChange={set('estRatesPa')}
+            className={inputCls}
+            placeholder="auto"
+            inputMode="decimal"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label className={labelCls}>Last Contacted</label>
+        <div className="flex items-center gap-2">
+          <input
+            type="date"
+            value={form.lastContacted}
+            onChange={set('lastContacted')}
+            className={inputCls}
+          />
+          {form.lastContacted && (
+            <span className="text-xs text-slate-400 whitespace-nowrap flex-shrink-0">
+              {daysAgo(form.lastContacted)}
+            </span>
+          )}
         </div>
       </div>
 
@@ -262,13 +426,17 @@ function PropertyForm({
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export default function Pipeline() {
-  const [properties,  setProperties]  = useState<Property[]>([]);
-  const [loading,     setLoading]     = useState(true);
-  const [error,       setError]       = useState('');
-  const [locations,   setLocations]   = useState<string[]>([]);
-  const [locsOpen,    setLocsOpen]    = useState(true);
-  const [newLoc,      setNewLoc]      = useState('');
-  const [modal,       setModal]       = useState<
+  const [properties,    setProperties]    = useState<Property[]>([]);
+  const [loading,       setLoading]       = useState(true);
+  const [error,         setError]         = useState('');
+  const [stages,        setStages]        = useState<StageConfig[]>(DEFAULT_STAGES);
+  const [editingStage,  setEditingStage]  = useState<{ name: string; draft: string } | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+  const [dealTypes,     setDealTypes]     = useState<string[]>([...DEAL_TYPES]);
+  const [locations,     setLocations]     = useState<string[]>([]);
+  const [locsOpen,      setLocsOpen]      = useState(true);
+  const [newLoc,        setNewLoc]        = useState('');
+  const [modal,         setModal]         = useState<
     { mode: 'add'; stage: string } | { mode: 'edit'; property: Property } | null
   >(null);
 
@@ -277,6 +445,26 @@ export default function Pipeline() {
       .then(setProperties)
       .catch(e => setError((e as Error).message))
       .finally(() => setLoading(false));
+
+    api.config.get('pipelineStages')
+      .then(({ value }) => {
+        if (!value) return;
+        const parsed: unknown = JSON.parse(value);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setStages(parsed as StageConfig[]);
+        }
+      })
+      .catch(() => {});
+
+    api.config.get('dealTypes')
+      .then(({ value }) => {
+        if (!value) return;
+        const parsed: unknown = JSON.parse(value);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setDealTypes(parsed as string[]);
+        }
+      })
+      .catch(() => {});
 
     api.config.get('targetLocations')
       .then(({ value }) => {
@@ -290,6 +478,57 @@ export default function Pipeline() {
       })
       .catch(() => setLocations(['Worcester', 'Cambridge']));
   }, []);
+
+  // ── Stage management ──────────────────────────────────────────────────────
+
+  const saveStages = (s: StageConfig[]) =>
+    api.config.set('pipelineStages', s).catch(() => {});
+
+  const commitRename = () => {
+    if (!editingStage) return;
+    const { name: oldName, draft } = editingStage;
+    const newName = draft.trim();
+    setEditingStage(null);
+    if (!newName || newName === oldName) return;
+    if (stages.some(s => s.name === newName && s.name !== oldName)) return;
+    const newStages = stages.map(s => s.name === oldName ? { ...s, name: newName } : s);
+    setStages(newStages);
+    saveStages(newStages);
+    const affected = properties.filter(p => p.stage === oldName);
+    if (affected.length > 0) {
+      setProperties(prev => prev.map(p => p.stage === oldName ? { ...p, stage: newName } : p));
+      affected.forEach(p =>
+        api.pipeline.update(encodeURIComponent(p.id), { ...p, stage: newName }).catch(() => {})
+      );
+    }
+  };
+
+  const handleAddStage = () => {
+    const existingColors = stages.map(s => s.color);
+    const color = pickColor(existingColors);
+    let name = 'New Stage';
+    let n = 1;
+    while (stages.some(s => s.name === name)) name = `New Stage ${n++}`;
+    const newStages = [...stages, { name, color }];
+    setStages(newStages);
+    saveStages(newStages);
+    setConfirmDelete(null);
+    setEditingStage({ name, draft: name });
+  };
+
+  const handleDeleteStage = (stageName: string) => {
+    const newStages = stages.filter(s => s.name !== stageName);
+    setStages(newStages);
+    saveStages(newStages);
+    setConfirmDelete(null);
+  };
+
+  // ── Deal types ────────────────────────────────────────────────────────────
+
+  const handleUpdateDealTypes = (types: string[]) => {
+    setDealTypes(types);
+    api.config.set('dealTypes', types).catch(() => {});
+  };
 
   // ── Target locations ──────────────────────────────────────────────────────
 
@@ -358,6 +597,9 @@ export default function Pipeline() {
   if (error) return <div className="p-6 text-red-500 text-sm">Error: {error}</div>;
 
   const total = properties.length;
+  const modalInitial = modal?.mode === 'edit'
+    ? modal.property
+    : { ...EMPTY_PROPERTY, stage: modal?.stage ?? stages[0]?.name ?? 'Identified' };
 
   return (
     <div className="flex flex-col h-full bg-slate-50 overflow-hidden">
@@ -368,7 +610,7 @@ export default function Pipeline() {
           {total} propert{total !== 1 ? 'ies' : 'y'} in pipeline
         </p>
         <button
-          onClick={() => setModal({ mode: 'add', stage: 'Identified' })}
+          onClick={() => setModal({ mode: 'add', stage: stages[0]?.name ?? 'Identified' })}
           className="flex items-center gap-1.5 px-4 py-2.5 bg-padel-green hover:bg-padel-green-dark text-white text-sm font-medium rounded-lg transition-colors min-h-[44px]"
         >
           <span className="text-base leading-none">+</span>
@@ -414,9 +656,7 @@ export default function Pipeline() {
                     onClick={() => removeLocation(loc)}
                     className="opacity-60 hover:opacity-100 leading-none"
                     title={`Remove ${loc}`}
-                  >
-                    ×
-                  </button>
+                  >×</button>
                 </span>
               ))}
               <div className="flex items-center gap-1.5">
@@ -431,9 +671,7 @@ export default function Pipeline() {
                   onClick={addLocation}
                   className="w-6 h-6 flex items-center justify-center bg-padel-green hover:bg-padel-green-dark text-white rounded-full text-sm leading-none transition-colors"
                   title="Add location"
-                >
-                  +
-                </button>
+                >+</button>
               </div>
             </div>
           </div>
@@ -445,25 +683,94 @@ export default function Pipeline() {
         <DragDropContext onDragEnd={onDragEnd}>
           <div className="flex gap-2 h-full">
 
-            {STAGES.map(stage => {
+            {stages.map(stage => {
               const isDead      = stage.name === 'Dead';
               const stageProps  = properties.filter(p => p.stage === stage.name);
+              const isEditing   = editingStage?.name === stage.name;
+              const isDeleting  = confirmDelete === stage.name;
 
               return (
                 <div key={stage.name} className="flex flex-col flex-1 min-w-[200px]">
 
                   {/* Column header */}
-                  <div className="flex items-center gap-1.5 mb-2 px-0.5 min-h-[24px]">
-                    <span
-                      className="w-2 h-2 rounded-full flex-shrink-0"
-                      style={{ backgroundColor: stage.color }}
-                    />
-                    <span className={`text-xs font-semibold truncate flex-1 ${isDead ? 'text-slate-400' : 'text-slate-700'}`}>
-                      {stage.name}
-                    </span>
-                    <span className="flex-shrink-0 bg-slate-100 text-slate-500 text-[11px] font-semibold px-1.5 py-0.5 rounded-full">
-                      {stageProps.length}
-                    </span>
+                  <div className="group flex items-center gap-1 mb-2 px-0.5 min-h-[24px]">
+
+                    {isEditing ? (
+                      <>
+                        <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: stage.color }} />
+                        <input
+                          autoFocus
+                          value={editingStage!.draft}
+                          onChange={e => setEditingStage(prev => prev ? { ...prev, draft: e.target.value } : null)}
+                          onKeyDown={e => {
+                            if (e.key === 'Enter')  commitRename();
+                            if (e.key === 'Escape') setEditingStage(null);
+                          }}
+                          onBlur={commitRename}
+                          className="flex-1 min-w-0 text-xs font-semibold text-slate-700 bg-white border border-padel-green rounded px-1.5 py-0.5 focus:outline-none focus:ring-1 focus:ring-padel-green/30"
+                        />
+                        <button onClick={commitRename} title="Confirm"
+                          className="w-5 h-5 flex items-center justify-center text-padel-green hover:text-padel-green-dark flex-shrink-0">
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                          </svg>
+                        </button>
+                        <button onClick={() => setEditingStage(null)} title="Cancel"
+                          className="w-5 h-5 flex items-center justify-center text-slate-400 hover:text-slate-600 flex-shrink-0">
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </>
+
+                    ) : isDeleting ? (
+                      <>
+                        <span className="text-[11px] font-medium text-red-500 truncate flex-1">
+                          Delete "{stage.name}"?
+                        </span>
+                        <button
+                          onClick={() => handleDeleteStage(stage.name)}
+                          className="text-[10px] font-semibold px-1.5 py-0.5 bg-red-500 hover:bg-red-600 text-white rounded flex-shrink-0 transition-colors"
+                        >Delete</button>
+                        <button
+                          onClick={() => setConfirmDelete(null)}
+                          className="text-[10px] font-semibold px-1.5 py-0.5 border border-slate-200 text-slate-600 hover:bg-slate-50 rounded flex-shrink-0 ml-0.5 transition-colors"
+                        >Cancel</button>
+                      </>
+
+                    ) : (
+                      <>
+                        <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: stage.color }} />
+                        <span
+                          className={`text-xs font-semibold truncate flex-1 cursor-pointer hover:text-padel-green transition-colors ${isDead ? 'text-slate-400' : 'text-slate-700'}`}
+                          onClick={() => { setConfirmDelete(null); setEditingStage({ name: stage.name, draft: stage.name }); }}
+                          title="Click to rename"
+                        >
+                          {stage.name}
+                        </span>
+                        <button
+                          onClick={() => { setConfirmDelete(null); setEditingStage({ name: stage.name, draft: stage.name }); }}
+                          title="Rename column"
+                          className="opacity-100 md:opacity-0 md:group-hover:opacity-100 w-5 h-5 flex items-center justify-center text-slate-300 hover:text-padel-green transition-opacity flex-shrink-0"
+                        >
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => { setEditingStage(null); setConfirmDelete(stage.name); }}
+                          title="Delete column"
+                          className="opacity-100 md:opacity-0 md:group-hover:opacity-100 w-5 h-5 flex items-center justify-center text-slate-300 hover:text-red-400 transition-opacity flex-shrink-0"
+                        >
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                        <span className="flex-shrink-0 bg-slate-100 text-slate-500 text-[11px] font-semibold px-1.5 py-0.5 rounded-full">
+                          {stageProps.length}
+                        </span>
+                      </>
+                    )}
                   </div>
 
                   {/* Column body */}
@@ -508,6 +815,15 @@ export default function Pipeline() {
               );
             })}
 
+            {/* Add column button */}
+            <div className="flex flex-col flex-shrink-0 w-10 justify-start pt-0.5">
+              <button
+                onClick={handleAddStage}
+                title="Add column"
+                className="w-8 h-8 flex items-center justify-center rounded-lg border-2 border-dashed border-slate-300 hover:border-padel-green hover:text-padel-green text-slate-400 text-lg transition-colors"
+              >+</button>
+            </div>
+
           </div>
         </DragDropContext>
       </div>
@@ -519,9 +835,12 @@ export default function Pipeline() {
           onClose={() => setModal(null)}
         >
           <PropertyForm
-            initial={modal.mode === 'edit' ? modal.property : { ...EMPTY_PROPERTY, stage: modal.stage }}
+            initial={modalInitial}
+            stages={stages}
+            dealTypes={dealTypes}
             onSave={handleSave}
             onCancel={() => setModal(null)}
+            onUpdateDealTypes={handleUpdateDealTypes}
           />
         </Modal>
       )}

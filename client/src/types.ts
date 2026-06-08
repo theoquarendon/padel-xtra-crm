@@ -37,4 +37,5 @@ export interface Property {
   totalRentPa: string;
   estRatesPa: string;
   notes: string;
+  lastContacted: string;
 }
