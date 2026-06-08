@@ -38,4 +38,6 @@ export interface Property {
   estRatesPa: string;
   notes: string;
   lastContacted: string;
+  brochureUrl: string;
+  mapUrl: string;
 }

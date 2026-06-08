@@ -4,7 +4,7 @@ import { readRows, appendRow, updateRow, deleteRow } from '../sheets';
 const router = Router();
 const SHEET = 'Pipeline';
 
-// Sheet columns: A=Name | B=Location | C=Stage | D=DealType | E=SizeSqFt | F=Landlord | G=RentPsf | H=TotalRentPa | I=EstRatesPa | J=Notes | K=LastContacted
+// Sheet columns: A=Name | B=Location | C=Stage | D=DealType | E=SizeSqFt | F=Landlord | G=RentPsf | H=TotalRentPa | I=EstRatesPa | J=Notes | K=LastContacted | L=BrochureUrl | M=MapUrl
 // No separate ID column — property name (col A) is the unique identifier
 const toObj = (r: string[]) => ({
   id:             r[0] || '',
@@ -19,11 +19,14 @@ const toObj = (r: string[]) => ({
   estRatesPa:     r[8] || '',
   notes:          r[9] || '',
   lastContacted:  r[10] || '',
+  brochureUrl:    r[11] || '',
+  mapUrl:         r[12] || '',
 });
 
 const toRow = (p: ReturnType<typeof toObj>) => [
   p.name, p.location, p.stage, p.dealType, p.sizeSqFt,
-  p.landlord, p.rentPsf, p.totalRentPa, p.estRatesPa, p.notes, p.lastContacted,
+  p.landlord, p.rentPsf, p.totalRentPa, p.estRatesPa, p.notes,
+  p.lastContacted, p.brochureUrl, p.mapUrl,
 ];
 
 router.get('/', async (_req, res) => {
@@ -40,7 +43,8 @@ router.post('/', async (req, res) => {
     const prop = toObj([
       req.body.name, req.body.location, req.body.stage, req.body.dealType,
       req.body.sizeSqFt, req.body.landlord, req.body.rentPsf,
-      req.body.totalRentPa, req.body.estRatesPa, req.body.notes, req.body.lastContacted ?? '',
+      req.body.totalRentPa, req.body.estRatesPa, req.body.notes,
+      req.body.lastContacted ?? '', req.body.brochureUrl ?? '', req.body.mapUrl ?? '',
     ]);
     await appendRow(SHEET, toRow(prop));
     res.json(prop);
@@ -54,7 +58,8 @@ router.put('/:id', async (req, res) => {
     const prop = toObj([
       req.body.name, req.body.location, req.body.stage, req.body.dealType,
       req.body.sizeSqFt, req.body.landlord, req.body.rentPsf,
-      req.body.totalRentPa, req.body.estRatesPa, req.body.notes, req.body.lastContacted ?? '',
+      req.body.totalRentPa, req.body.estRatesPa, req.body.notes,
+      req.body.lastContacted ?? '', req.body.brochureUrl ?? '', req.body.mapUrl ?? '',
     ]);
     const ok = await updateRow(SHEET, decodeURIComponent(req.params.id), toRow(prop));
     ok ? res.json(prop) : res.status(404).json({ error: 'Not found' });
