@@ -240,8 +240,8 @@ function PropertyCard({
               <div className="flex flex-wrap gap-1 mt-1.5">
                 {property.dealType && (
                   <span
-                    className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold border"
-                    style={{ backgroundColor: dtStyle.bg, color: dtStyle.text, borderColor: dtStyle.border }}
+                    className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold"
+                    style={{ backgroundColor: dtStyle.bg, color: dtStyle.text }}
                   >
                     {property.dealType}
                   </span>
