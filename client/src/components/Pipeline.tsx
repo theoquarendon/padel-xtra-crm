@@ -676,6 +676,17 @@ function PropertyForm({
         </div>
       </div>
 
+      <div className="md:w-1/3">
+        <label className={labelCls}>Operating Profit (£)</label>
+        <input
+          value={form.operatingProfit}
+          onChange={set('operatingProfit')}
+          className={inputCls}
+          placeholder="0.00"
+          inputMode="decimal"
+        />
+      </div>
+
       {(form.dealType === 'To Let / For Sale' || form.dealType === 'Design & Build') && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
