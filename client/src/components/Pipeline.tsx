@@ -176,6 +176,16 @@ function PropertyCard({
               >×</button>
             </div>
 
+            {/* Next action badge */}
+            {(() => {
+              const badge = nextActionBadge(property.nextAction, property.nextActionDate);
+              return badge ? (
+                <span className={`inline-flex items-center mt-1 px-2 py-0.5 rounded-full text-[10px] font-medium border ${badge.cls}`}>
+                  {badge.text}
+                </span>
+              ) : null;
+            })()}
+
             {/* Location */}
             {property.location && (
               <p className="text-[11px] text-slate-400 mt-0.5 truncate">
