@@ -462,10 +462,11 @@ function NotesTimeline({ value, onChange }: { value: string; onChange: (json: st
                 </div>
               ) : (
                 <div>
-                  <p className="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">{entry.text}</p>
+                  <p className={`text-sm leading-relaxed whitespace-pre-wrap ${entry.auto ? 'text-slate-400 italic' : 'text-slate-700'}`}>{entry.text}</p>
                   <div className="flex items-center gap-1.5 mt-1">
                     <span className="text-[11px] text-slate-400">{fmtTimestamp(entry.timestamp)}</span>
                     {entry.edited && <span className="text-[10px] text-slate-400 italic">· edited</span>}
+                    {entry.auto && <span className="text-[10px] text-slate-300 font-medium uppercase tracking-wide">auto</span>}
                     <div className="ml-auto flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button
                         type="button"
