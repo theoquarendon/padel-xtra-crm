@@ -49,7 +49,7 @@ function getDtStyle(dealType: string) {
 function fmtPsf(s: string): string {
   const n = parseFloat(s.replace(/[^\d.]/g, ''));
   if (isNaN(n)) return s;
-  return n.toLocaleString('en-GB', { maximumFractionDigits: 2 });
+  return n.toFixed(2);
 }
 
 function fmtInt(s: string): string {
