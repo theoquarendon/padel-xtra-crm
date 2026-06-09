@@ -22,7 +22,7 @@ export const STAGE_COLOR: Record<string, string> = {
   'Dead':              '#94a3b8',
 };
 
-export const DEAL_TYPES = ['Lease', 'Owner Occupy', 'Design & Build'] as const;
+export const DEAL_TYPES = ['Lease', 'Owner Occupy', 'Design & Build', 'To Let / For Sale'] as const;
 export type DealType = typeof DEAL_TYPES[number];
 
 export interface Property {
@@ -40,4 +40,6 @@ export interface Property {
   lastContacted: string;
   brochureUrl: string;
   mapUrl: string;
+  saleLetType: string;
+  capValuePsf: string;
 }
