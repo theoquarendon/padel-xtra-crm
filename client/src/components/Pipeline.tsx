@@ -63,6 +63,34 @@ function fmtSqFt(s: string): string {
   return isNaN(n) ? s : n.toLocaleString('en-GB');
 }
 
+function toStr(v: unknown): string {
+  if (v == null) return '';
+  return typeof v === 'string' ? v : String(v);
+}
+
+function sanitiseProp(p: import('../types').Property): import('../types').Property {
+  return {
+    id:             toStr(p.id),
+    name:           toStr(p.name),
+    location:       toStr(p.location),
+    stage:          toStr(p.stage) || 'Identified',
+    dealType:       toStr(p.dealType),
+    sizeSqFt:       toStr(p.sizeSqFt),
+    landlord:       toStr(p.landlord),
+    rentPsf:        toStr(p.rentPsf),
+    totalRentPa:    toStr(p.totalRentPa),
+    estRatesPa:     toStr(p.estRatesPa),
+    notes:          toStr(p.notes),
+    lastContacted:  toStr(p.lastContacted),
+    brochureUrl:    toStr(p.brochureUrl),
+    mapUrl:         toStr(p.mapUrl),
+    saleLetType:    toStr(p.saleLetType),
+    capValuePsf:    toStr(p.capValuePsf),
+    nextAction:     toStr(p.nextAction),
+    nextActionDate: toStr(p.nextActionDate),
+  };
+}
+
 function daysAgo(dateStr: string): string {
   if (!dateStr) return '';
   const [y, m, d] = dateStr.split('-').map(Number);
