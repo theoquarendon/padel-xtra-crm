@@ -33,15 +33,19 @@ const DEFAULT_STAGES: StageConfig[] = PIPELINE_STAGES.map(name => ({
 
 // ─── Deal type badge styles ───────────────────────────────────────────────────
 
-const DEAL_TYPE_STYLE: Record<string, { bg: string; text: string; border: string }> = {
-  'Lease':              { bg: '#dcfce7', text: '#166534', border: '#86efac' },
-  'Owner Occupy':       { bg: '#dbeafe', text: '#1a2e4a', border: '#93c5fd' },
-  'Design & Build':     { bg: '#fef3c7', text: '#78350f', border: '#fcd34d' },
-  'To Let / For Sale':  { bg: '#f0fdf4', text: '#15803d', border: '#86efac' },
+const DEAL_TYPE_STYLE: Record<string, { bg: string; text: string }> = {
+  'For Sale':           { bg: '#16A34A', text: '#ffffff' },
+  'To Let':             { bg: '#2563EB', text: '#ffffff' },
+  'To Let / For Sale':  { bg: '#16A34A', text: '#ffffff' },
+  'Lease':              { bg: '#2563EB', text: '#ffffff' },
+  'Design & Build':     { bg: '#EA580C', text: '#ffffff' },
+  'Under Offer':        { bg: '#7C3AED', text: '#ffffff' },
+  'Owner Occupy':       { bg: '#0D9488', text: '#ffffff' },
+  'Dead':               { bg: '#6B7280', text: '#ffffff' },
 };
 
 function getDtStyle(dealType: string) {
-  return DEAL_TYPE_STYLE[dealType] ?? { bg: '#f1f5f9', text: '#475569', border: '#cbd5e1' };
+  return DEAL_TYPE_STYLE[dealType] ?? { bg: '#0D9488', text: '#ffffff' };
 }
 
 // ─── Formatters ───────────────────────────────────────────────────────────────
