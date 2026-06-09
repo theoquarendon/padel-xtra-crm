@@ -431,16 +431,7 @@ function PropertyForm({
         </div>
       </div>
 
-      <div>
-        <label className={labelCls}>For Sale / To Let</label>
-        <select value={form.saleLetType} onChange={set('saleLetType')} className={inputCls}>
-          <option value="">— None —</option>
-          <option value="For Sale">For Sale</option>
-          <option value="To Let">To Let</option>
-        </select>
-      </div>
-
-      {(form.saleLetType === 'For Sale' || form.saleLetType === 'To Let') && (
+      {form.dealType === 'To Let / For Sale' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
             <label className={labelCls}>Cap Value per sq ft (£)</label>
