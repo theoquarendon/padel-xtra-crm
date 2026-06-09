@@ -34,9 +34,10 @@ const DEFAULT_STAGES: StageConfig[] = PIPELINE_STAGES.map(name => ({
 // ─── Deal type badge styles ───────────────────────────────────────────────────
 
 const DEAL_TYPE_STYLE: Record<string, { bg: string; text: string; border: string }> = {
-  'Lease':          { bg: '#dcfce7', text: '#166534', border: '#86efac' },
-  'Owner Occupy':   { bg: '#dbeafe', text: '#1a2e4a', border: '#93c5fd' },
-  'Design & Build': { bg: '#fef3c7', text: '#78350f', border: '#fcd34d' },
+  'Lease':              { bg: '#dcfce7', text: '#166534', border: '#86efac' },
+  'Owner Occupy':       { bg: '#dbeafe', text: '#1a2e4a', border: '#93c5fd' },
+  'Design & Build':     { bg: '#fef3c7', text: '#78350f', border: '#fcd34d' },
+  'To Let / For Sale':  { bg: '#f0fdf4', text: '#15803d', border: '#86efac' },
 };
 
 function getDtStyle(dealType: string) {
@@ -64,7 +65,8 @@ function fmtSqFt(s: string): string {
 
 function daysAgo(dateStr: string): string {
   if (!dateStr) return '';
-  const date = new Date(dateStr);
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const date = new Date(y, m - 1, d);
   if (isNaN(date.getTime())) return '';
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -176,49 +178,47 @@ function PropertyCard({
               </p>
             )}
 
-            {/* Link icons */}
-            {(property.brochureUrl || property.mapUrl) && (
-              <div className="flex items-center gap-1.5 mt-1.5">
-                {/* Brochure */}
-                <button
-                  onClick={e => {
-                    e.stopPropagation();
-                    if (property.brochureUrl) window.open(property.brochureUrl, '_blank', 'noopener');
-                  }}
-                  title={property.brochureUrl ? 'Open brochure' : 'No brochure link'}
-                  className={`w-6 h-6 flex items-center justify-center rounded transition-colors ${
-                    property.brochureUrl
-                      ? 'text-slate-500 hover:text-padel-green hover:bg-padel-green/10'
-                      : 'text-slate-200 cursor-default'
-                  }`}
-                >
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
-                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                </button>
-                {/* Map */}
-                <button
-                  onClick={e => {
-                    e.stopPropagation();
-                    if (property.mapUrl) window.open(property.mapUrl, '_blank', 'noopener');
-                  }}
-                  title={property.mapUrl ? 'Open map' : 'No map link'}
-                  className={`w-6 h-6 flex items-center justify-center rounded transition-colors ${
-                    property.mapUrl
-                      ? 'text-slate-500 hover:text-padel-green hover:bg-padel-green/10'
-                      : 'text-slate-200 cursor-default'
-                  }`}
-                >
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
-                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
-                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                </button>
-              </div>
-            )}
+            {/* Link icons — always visible */}
+            <div className="flex items-center gap-1.5 mt-1.5">
+              {/* Brochure */}
+              <button
+                onClick={e => {
+                  e.stopPropagation();
+                  if (property.brochureUrl) window.open(property.brochureUrl, '_blank', 'noopener');
+                }}
+                title={property.brochureUrl ? 'Open brochure' : 'No brochure link'}
+                className={`w-6 h-6 flex items-center justify-center rounded transition-colors ${
+                  property.brochureUrl
+                    ? 'text-blue-500 hover:text-blue-600 hover:bg-blue-50'
+                    : 'text-slate-200 cursor-default'
+                }`}
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </button>
+              {/* Map */}
+              <button
+                onClick={e => {
+                  e.stopPropagation();
+                  if (property.mapUrl) window.open(property.mapUrl, '_blank', 'noopener');
+                }}
+                title={property.mapUrl ? 'Open map' : 'No map link'}
+                className={`w-6 h-6 flex items-center justify-center rounded transition-colors ${
+                  property.mapUrl
+                    ? 'text-green-600 hover:text-green-700 hover:bg-green-50'
+                    : 'text-slate-200 cursor-default'
+                }`}
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
+                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
+                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </button>
+            </div>
 
           </div>
         </div>
@@ -281,7 +281,18 @@ const EMPTY_PROPERTY: Omit<Property, 'id'> = {
   name: '', location: '', stage: 'Identified', dealType: '',
   sizeSqFt: '', landlord: '', rentPsf: '', totalRentPa: '', estRatesPa: '',
   notes: '', lastContacted: '', brochureUrl: '', mapUrl: '',
+  saleLetType: '', capValuePsf: '',
 };
+
+function computeTotalCapValue(capValuePsf: string, sizeSqFt: string): string {
+  const psf  = parseFloat(capValuePsf.replace(/[^\d.]/g, ''));
+  const sqft = parseFloat(sizeSqFt.replace(/[^\d.]/g, ''));
+  if (isNaN(psf) || isNaN(sqft) || psf <= 0 || sqft <= 0) return '';
+  return (psf * sqft).toLocaleString('en-GB', {
+    style: 'currency', currency: 'GBP',
+    minimumFractionDigits: 2, maximumFractionDigits: 2,
+  });
+}
 
 function PropertyForm({
   initial,
@@ -315,13 +326,13 @@ function PropertyForm({
           if (!isNaN(psf) && !isNaN(sqft) && psf > 0 && sqft > 0) {
             const total = psf * sqft;
             updated.totalRentPa = String(Math.round(total));
-            updated.estRatesPa  = String(Math.round(total * 0.2));
+            updated.estRatesPa  = String(Math.round(total * 0.43));
           }
         }
         if (k === 'totalRentPa') {
           const total = parseFloat(value.replace(/[^\d.]/g, ''));
           if (!isNaN(total) && total > 0) {
-            updated.estRatesPa = String(Math.round(total * 0.2));
+            updated.estRatesPa = String(Math.round(total * 0.43));
           }
         }
         return updated;
@@ -421,6 +432,39 @@ function PropertyForm({
       </div>
 
       <div>
+        <label className={labelCls}>For Sale / To Let</label>
+        <select value={form.saleLetType} onChange={set('saleLetType')} className={inputCls}>
+          <option value="">— None —</option>
+          <option value="For Sale">For Sale</option>
+          <option value="To Let">To Let</option>
+        </select>
+      </div>
+
+      {(form.saleLetType === 'For Sale' || form.saleLetType === 'To Let') && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div>
+            <label className={labelCls}>Cap Value per sq ft (£)</label>
+            <input
+              value={form.capValuePsf}
+              onChange={set('capValuePsf')}
+              className={inputCls}
+              placeholder="0.00"
+              inputMode="decimal"
+            />
+          </div>
+          <div>
+            <label className={labelCls}>Total Cap Value</label>
+            <input
+              readOnly
+              value={computeTotalCapValue(form.capValuePsf, form.sizeSqFt)}
+              className={inputCls + ' bg-slate-50 text-slate-600 cursor-default'}
+              placeholder="auto"
+            />
+          </div>
+        </div>
+      )}
+
+      <div>
         <label className={labelCls}>Last Contacted</label>
         <div className="flex items-center gap-2">
           <input
@@ -440,23 +484,59 @@ function PropertyForm({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <div>
           <label className={labelCls}>Brochure URL</label>
-          <input
-            type="url"
-            value={form.brochureUrl}
-            onChange={set('brochureUrl')}
-            className={inputCls}
-            placeholder="https://drive.google.com/..."
-          />
+          <div className="flex gap-2">
+            <input
+              type="url"
+              value={form.brochureUrl}
+              onChange={set('brochureUrl')}
+              className={inputCls + ' flex-1'}
+              placeholder="https://drive.google.com/..."
+            />
+            <button
+              type="button"
+              onClick={() => form.brochureUrl && window.open(form.brochureUrl, '_blank', 'noopener')}
+              title={form.brochureUrl ? 'Open brochure' : 'Enter a URL first'}
+              className={`flex-shrink-0 w-10 flex items-center justify-center rounded-lg border transition-colors ${
+                form.brochureUrl
+                  ? 'border-blue-200 text-blue-500 hover:bg-blue-50 hover:border-blue-300'
+                  : 'border-slate-200 text-slate-300 cursor-default'
+              }`}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </button>
+          </div>
         </div>
         <div>
           <label className={labelCls}>Location Link</label>
-          <input
-            type="url"
-            value={form.mapUrl}
-            onChange={set('mapUrl')}
-            className={inputCls}
-            placeholder="https://maps.google.com/..."
-          />
+          <div className="flex gap-2">
+            <input
+              type="url"
+              value={form.mapUrl}
+              onChange={set('mapUrl')}
+              className={inputCls + ' flex-1'}
+              placeholder="https://maps.google.com/..."
+            />
+            <button
+              type="button"
+              onClick={() => form.mapUrl && window.open(form.mapUrl, '_blank', 'noopener')}
+              title={form.mapUrl ? 'Open map' : 'Enter a URL first'}
+              className={`flex-shrink-0 w-10 flex items-center justify-center rounded-lg border transition-colors ${
+                form.mapUrl
+                  ? 'border-green-200 text-green-600 hover:bg-green-50 hover:border-green-300'
+                  : 'border-slate-200 text-slate-300 cursor-default'
+              }`}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
+                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
+                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
 
