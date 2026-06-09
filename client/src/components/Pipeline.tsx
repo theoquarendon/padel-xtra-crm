@@ -1288,10 +1288,10 @@ export default function Pipeline() {
       />
 
       {/* ── Target Locations Panel ── */}
-      <div className="mx-4 md:mx-6 mb-3 bg-white border border-slate-200 rounded-xl overflow-hidden">
+      <div className="mx-4 md:mx-6 mb-1.5 bg-white border border-slate-200 rounded-lg overflow-hidden">
         <button
           onClick={() => setLocsOpen(o => !o)}
-          className="w-full flex items-center justify-between px-4 py-2.5 hover:bg-slate-50 transition-colors"
+          className="w-full flex items-center justify-between px-4 py-1.5 hover:bg-slate-50 transition-colors"
         >
           <div className="flex items-center gap-2">
             <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
