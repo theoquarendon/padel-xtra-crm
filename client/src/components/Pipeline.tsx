@@ -689,13 +689,7 @@ function PropertyForm({
 
       <div>
         <label className={labelCls}>Notes</label>
-        <textarea
-          value={form.notes}
-          onChange={set('notes')}
-          rows={3}
-          className={inputCls + ' resize-none'}
-          placeholder="Any relevant notes..."
-        />
+        <NotesTimeline value={form.notes} onChange={handleNotesChange} />
       </div>
 
       <div className="flex justify-end gap-2 pt-1">
