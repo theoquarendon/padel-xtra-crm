@@ -36,7 +36,7 @@ const DEFAULT_STAGES: StageConfig[] = PIPELINE_STAGES.map(name => ({
 const DEAL_TYPE_STYLE: Record<string, { bg: string; text: string }> = {
   'For Sale':           { bg: '#E11D48', text: '#ffffff' },
   'To Let':             { bg: '#2563EB', text: '#ffffff' },
-  'To Let / For Sale':  { bg: '#E11D48', text: '#ffffff' },
+  'To Let / For Sale':  { bg: '#16A34A', text: '#ffffff' },
   'Lease':              { bg: '#2563EB', text: '#ffffff' },
   'Design & Build':     { bg: '#EA580C', text: '#ffffff' },
   'Under Offer':        { bg: '#7C3AED', text: '#ffffff' },
