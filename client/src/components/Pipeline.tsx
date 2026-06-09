@@ -475,7 +475,7 @@ function PropertyForm({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <div>
           <label className={labelCls}>Brochure URL</label>
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-stretch">
             <input
               type="url"
               value={form.brochureUrl}
@@ -483,26 +483,25 @@ function PropertyForm({
               className={inputCls + ' flex-1'}
               placeholder="https://drive.google.com/..."
             />
-            <button
-              type="button"
-              onClick={() => form.brochureUrl && window.open(form.brochureUrl, '_blank', 'noopener')}
-              title={form.brochureUrl ? 'Open brochure' : 'Enter a URL first'}
-              className={`flex-shrink-0 w-10 flex items-center justify-center rounded-lg border transition-colors ${
-                form.brochureUrl
-                  ? 'border-blue-200 text-blue-500 hover:bg-blue-50 hover:border-blue-300'
-                  : 'border-slate-200 text-slate-300 cursor-default'
-              }`}
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
-                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-            </button>
+            {form.brochureUrl && (
+              <a
+                href={form.brochureUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Open brochure"
+                className="flex-shrink-0 w-10 flex items-center justify-center rounded-lg border border-blue-300 bg-blue-50 text-blue-600 hover:bg-blue-100 hover:border-blue-400 transition-colors cursor-pointer"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </a>
+            )}
           </div>
         </div>
         <div>
           <label className={labelCls}>Location Link</label>
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-stretch">
             <input
               type="url"
               value={form.mapUrl}
@@ -510,23 +509,22 @@ function PropertyForm({
               className={inputCls + ' flex-1'}
               placeholder="https://maps.google.com/..."
             />
-            <button
-              type="button"
-              onClick={() => form.mapUrl && window.open(form.mapUrl, '_blank', 'noopener')}
-              title={form.mapUrl ? 'Open map' : 'Enter a URL first'}
-              className={`flex-shrink-0 w-10 flex items-center justify-center rounded-lg border transition-colors ${
-                form.mapUrl
-                  ? 'border-green-200 text-green-600 hover:bg-green-50 hover:border-green-300'
-                  : 'border-slate-200 text-slate-300 cursor-default'
-              }`}
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
-                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
-                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-            </button>
+            {form.mapUrl && (
+              <a
+                href={form.mapUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Open map"
+                className="flex-shrink-0 w-10 flex items-center justify-center rounded-lg border border-green-300 bg-green-50 text-green-600 hover:bg-green-100 hover:border-green-400 transition-colors cursor-pointer"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </a>
+            )}
           </div>
         </div>
       </div>
