@@ -1011,6 +1011,9 @@ export default function Pipeline() {
         </button>
       </div>
 
+      {/* ── Summary strip ── */}
+      <SummaryStrip properties={properties} />
+
       {/* ── Target Locations Panel ── */}
       <div className="mx-4 md:mx-6 mb-3 bg-white border border-slate-200 rounded-xl overflow-hidden">
         <button
