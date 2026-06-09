@@ -77,6 +77,43 @@ function daysAgo(dateStr: string): string {
   return `${diff} days ago`;
 }
 
+// ─── Notes helpers ────────────────────────────────────────────────────────────
+
+interface NoteEntry {
+  id: string;
+  text: string;
+  timestamp: string;
+  edited: boolean;
+}
+
+function fmtTimestamp(iso: string): string {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return iso;
+  const datePart = d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+  const timePart = d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+  return `${datePart}, ${timePart}`;
+}
+
+function parseNotes(raw: string): NoteEntry[] {
+  if (!raw) return [];
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    if (Array.isArray(parsed)) return parsed as NoteEntry[];
+  } catch {}
+  // Legacy plain-text note — wrap it in a single entry
+  return [{ id: '0', text: raw, timestamp: new Date().toISOString(), edited: false }];
+}
+
+function notesPreview(raw: string): string {
+  if (!raw) return '';
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    if (Array.isArray(parsed) && parsed.length > 0) return (parsed[0] as NoteEntry).text;
+  } catch {}
+  return raw;
+}
+
 // ─── Property card ────────────────────────────────────────────────────────────
 
 function PropertyCard({
