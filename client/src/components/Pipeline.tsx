@@ -309,6 +309,128 @@ function DealTypeManager({
   );
 }
 
+// ─── Notes timeline ───────────────────────────────────────────────────────────
+
+function NotesTimeline({ value, onChange }: { value: string; onChange: (json: string) => void }) {
+  const [entries,   setEntries]   = useState<NoteEntry[]>(() => parseNotes(value));
+  const [newText,   setNewText]   = useState('');
+  const [editId,    setEditId]    = useState<string | null>(null);
+  const [editDraft, setEditDraft] = useState('');
+
+  const commit = (next: NoteEntry[]) => { setEntries(next); onChange(JSON.stringify(next)); };
+
+  const addNote = () => {
+    const text = newText.trim();
+    if (!text) return;
+    commit([{ id: String(Date.now()), text, timestamp: new Date().toISOString(), edited: false }, ...entries]);
+    setNewText('');
+  };
+
+  const deleteNote = (id: string) => commit(entries.filter(e => e.id !== id));
+  const startEdit  = (e: NoteEntry) => { setEditId(e.id); setEditDraft(e.text); };
+  const cancelEdit = () => { setEditId(null); setEditDraft(''); };
+  const saveEdit   = (id: string) => {
+    if (!editDraft.trim()) return;
+    commit(entries.map(e => e.id === id ? { ...e, text: editDraft.trim(), edited: true } : e));
+    setEditId(null);
+  };
+
+  const areaCls = 'w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-padel-green focus:border-padel-green resize-none';
+
+  return (
+    <div>
+      {/* New note input */}
+      <div className="flex flex-col gap-2 mb-3">
+        <textarea
+          value={newText}
+          onChange={e => setNewText(e.target.value)}
+          onKeyDown={e => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) addNote(); }}
+          rows={2}
+          placeholder="Add a note..."
+          className={areaCls}
+        />
+        <div className="flex justify-end">
+          <button
+            type="button"
+            onClick={addNote}
+            disabled={!newText.trim()}
+            className="px-3 py-1.5 text-xs font-medium rounded-lg bg-padel-green hover:bg-padel-green-dark disabled:opacity-40 disabled:cursor-not-allowed text-white transition-colors"
+          >
+            Add Note
+          </button>
+        </div>
+      </div>
+
+      {/* Timeline */}
+      {entries.length > 0 && (
+        <div className="pl-4 border-l-2 border-slate-200 space-y-4">
+          {entries.map(entry => (
+            <div key={entry.id} className="relative group">
+              <span className="absolute -left-[1.3rem] top-1.5 w-2.5 h-2.5 rounded-full bg-slate-300 border-2 border-white block" />
+
+              {editId === entry.id ? (
+                <div className="space-y-2">
+                  <textarea
+                    autoFocus
+                    value={editDraft}
+                    onChange={e => setEditDraft(e.target.value)}
+                    rows={3}
+                    className={areaCls}
+                  />
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => saveEdit(entry.id)}
+                      className="px-3 py-1 text-xs font-medium rounded-lg bg-padel-green hover:bg-padel-green-dark text-white transition-colors"
+                    >Save</button>
+                    <button
+                      type="button"
+                      onClick={cancelEdit}
+                      className="px-3 py-1 text-xs font-medium rounded-lg border border-slate-300 text-slate-600 hover:bg-slate-50 transition-colors"
+                    >Cancel</button>
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  <p className="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">{entry.text}</p>
+                  <div className="flex items-center gap-1.5 mt-1">
+                    <span className="text-[11px] text-slate-400">{fmtTimestamp(entry.timestamp)}</span>
+                    {entry.edited && <span className="text-[10px] text-slate-400 italic">· edited</span>}
+                    <div className="ml-auto flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button
+                        type="button"
+                        onClick={() => startEdit(entry)}
+                        title="Edit note"
+                        className="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded transition-colors"
+                      >
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                        </svg>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => deleteNote(entry.id)}
+                        title="Delete note"
+                        className="w-6 h-6 flex items-center justify-center text-slate-400 hover:text-red-400 hover:bg-red-50 rounded transition-colors"
+                      >
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── Property form ─────────────────────────────────────────────────────────────
 
 const EMPTY_PROPERTY: Omit<Property, 'id'> = {
