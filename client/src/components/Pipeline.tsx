@@ -728,35 +728,69 @@ function PropertyForm({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <div>
-          <label className={labelCls}>Next Action</label>
-          <input
-            value={form.nextAction}
-            onChange={set('nextAction')}
-            className={inputCls}
-            placeholder="e.g. Chase re: deposit terms"
-          />
-        </div>
-        <div>
-          <label className={labelCls}>Next Action Date</label>
-          <div className="flex items-center gap-2">
+      <div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div>
+            <label className={labelCls}>Next Action</label>
             <input
-              type="date"
-              value={form.nextActionDate}
-              onChange={set('nextActionDate')}
+              value={form.nextAction}
+              onChange={e => { setTickConfirm(false); set('nextAction')(e); }}
               className={inputCls}
+              placeholder="e.g. Chase re: deposit terms"
             />
-            {form.nextActionDate && (() => {
-              const badge = nextActionBadge(form.nextAction, form.nextActionDate);
-              return badge ? (
-                <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full border whitespace-nowrap flex-shrink-0 ${badge.cls}`}>
-                  {badge.text}
-                </span>
-              ) : null;
-            })()}
+          </div>
+          <div>
+            <label className={labelCls}>Next Action Date</label>
+            <div className="flex items-center gap-2">
+              <input
+                type="date"
+                value={form.nextActionDate}
+                onChange={set('nextActionDate')}
+                className={inputCls}
+              />
+              {form.nextActionDate && (() => {
+                const badge = nextActionBadge(form.nextAction, form.nextActionDate);
+                return badge ? (
+                  <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full border whitespace-nowrap flex-shrink-0 ${badge.cls}`}>
+                    {badge.text}
+                  </span>
+                ) : null;
+              })()}
+            </div>
           </div>
         </div>
+
+        {/* Tick-to-complete */}
+        {form.nextAction.trim() && (
+          <div className="mt-2">
+            {!tickConfirm ? (
+              <button
+                type="button"
+                onClick={() => setTickConfirm(true)}
+                className="inline-flex items-center gap-1.5 text-xs text-emerald-600 hover:text-emerald-700 font-medium transition-colors"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                </svg>
+                Mark as complete
+              </button>
+            ) : (
+              <div className="flex items-center gap-2 px-3 py-2 bg-emerald-50 border border-emerald-200 rounded-lg">
+                <span className="text-xs text-emerald-700 flex-1">Mark as complete?</span>
+                <button
+                  type="button"
+                  onClick={handleTickComplete}
+                  className="text-xs font-semibold px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-md transition-colors"
+                >Confirm</button>
+                <button
+                  type="button"
+                  onClick={() => setTickConfirm(false)}
+                  className="text-xs px-2.5 py-1 border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-md transition-colors"
+                >Cancel</button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
