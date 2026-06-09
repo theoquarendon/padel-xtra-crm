@@ -51,6 +51,7 @@ router.post('/', async (req, res) => {
       req.body.totalRentPa, req.body.estRatesPa, req.body.notes,
       req.body.lastContacted ?? '', req.body.brochureUrl ?? '', req.body.mapUrl ?? '',
       req.body.saleLetType ?? '', req.body.capValuePsf ?? '',
+      req.body.nextAction ?? '', req.body.nextActionDate ?? '',
     ]);
     await appendRow(SHEET, toRow(prop));
     res.json(prop);
