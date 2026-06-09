@@ -105,6 +105,14 @@ function daysAgo(dateStr: string): string {
   return `${diff} days ago`;
 }
 
+function fmtShortDate(dateStr: string): string {
+  if (!dateStr) return '';
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const date = new Date(y, m - 1, d);
+  if (isNaN(date.getTime())) return '';
+  return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+}
+
 // ─── Next action badge ────────────────────────────────────────────────────────
 
 function nextActionBadge(action: string, dateStr: string) {
