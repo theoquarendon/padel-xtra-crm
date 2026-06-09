@@ -660,6 +660,37 @@ function PropertyForm({
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <div>
+          <label className={labelCls}>Next Action</label>
+          <input
+            value={form.nextAction}
+            onChange={set('nextAction')}
+            className={inputCls}
+            placeholder="e.g. Chase re: deposit terms"
+          />
+        </div>
+        <div>
+          <label className={labelCls}>Next Action Date</label>
+          <div className="flex items-center gap-2">
+            <input
+              type="date"
+              value={form.nextActionDate}
+              onChange={set('nextActionDate')}
+              className={inputCls}
+            />
+            {form.nextActionDate && (() => {
+              const badge = nextActionBadge(form.nextAction, form.nextActionDate);
+              return badge ? (
+                <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full border whitespace-nowrap flex-shrink-0 ${badge.cls}`}>
+                  {badge.text}
+                </span>
+              ) : null;
+            })()}
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div>
           <label className={labelCls}>Brochure URL</label>
           <div className="flex gap-2 items-stretch">
             <input
