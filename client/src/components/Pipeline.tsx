@@ -1347,7 +1347,7 @@ export default function Pipeline() {
       </div>
 
       {/* ── Kanban board ── */}
-      <div className="flex-1 overflow-auto px-4 md:px-6 pb-4 min-h-0">
+      <div className="flex-1 overflow-auto px-4 md:px-6 pb-2 min-h-0">
         <DragDropContext onDragEnd={onDragEnd}>
           <div className="flex gap-2 h-full">
 
