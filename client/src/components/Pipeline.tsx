@@ -503,7 +503,7 @@ const EMPTY_PROPERTY: Omit<Property, 'id'> = {
   sizeSqFt: '', landlord: '', rentPsf: '', totalRentPa: '', estRatesPa: '',
   notes: '', lastContacted: '', brochureUrl: '', mapUrl: '',
   saleLetType: '', capValuePsf: '',
-  nextAction: '', nextActionDate: '',
+  nextAction: '', nextActionDate: '', operatingProfit: '',
 };
 
 function computeTotalCapValue(capValuePsf: string, sizeSqFt: string): string {
