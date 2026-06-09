@@ -862,7 +862,7 @@ export default function Pipeline() {
 
   useEffect(() => {
     api.pipeline.list()
-      .then(setProperties)
+      .then(props => setProperties(props.map(sanitiseProp)))
       .catch(e => setError((e as Error).message))
       .finally(() => setLoading(false));
 
