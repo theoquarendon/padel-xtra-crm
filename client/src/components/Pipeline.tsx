@@ -685,7 +685,7 @@ function PropertyForm({
         />
       </div>
 
-      {(form.dealType === 'To Let / For Sale' || form.dealType === 'Design & Build') && (
+      {(['For Sale', 'To Let', 'To Let / For Sale', 'Design & Build'].includes(form.dealType)) && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
             <label className={labelCls}>Cap Value per sq ft (£)</label>
