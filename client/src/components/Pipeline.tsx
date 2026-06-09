@@ -215,6 +215,13 @@ function PropertyCard({
               </p>
             )}
 
+            {/* Latest note preview */}
+            {notesPreview(property.notes) && (
+              <p className="text-[11px] text-slate-500 mt-1 line-clamp-2 leading-relaxed">
+                {notesPreview(property.notes)}
+              </p>
+            )}
+
             {/* Link icons — only shown when URLs exist */}
             {(property.brochureUrl || property.mapUrl) && (
               <div className="flex items-center gap-1.5 mt-1.5">
