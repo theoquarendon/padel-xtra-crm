@@ -1214,6 +1214,30 @@ export default function Pipeline() {
     }
   };
 
+  const handleUpdateTask = async (id: string, nextAction: string, nextActionDate: string) => {
+    const prop = properties.find(p => p.id === id);
+    if (!prop) return;
+    const updated = sanitiseProp({ ...prop, nextAction, nextActionDate });
+    await api.pipeline.update(encodeURIComponent(id), updated);
+    setProperties(prev => prev.map(p => p.id === id ? updated : p));
+  };
+
+  const handleCompleteTask = async (id: string, taskText: string) => {
+    const prop = properties.find(p => p.id === id);
+    if (!prop) return;
+    const autoNote: NoteEntry = {
+      id: String(Date.now()),
+      text: `Task completed: ${taskText}`,
+      timestamp: new Date().toISOString(),
+      edited: false,
+      auto: true,
+    };
+    const newNotes = JSON.stringify([autoNote, ...parseNotes(prop.notes)]);
+    const updated = sanitiseProp({ ...prop, nextAction: '', nextActionDate: '', notes: newNotes });
+    await api.pipeline.update(encodeURIComponent(id), updated);
+    setProperties(prev => prev.map(p => p.id === id ? updated : p));
+  };
+
   const handleDelete = async (id: string) => {
     if (!confirm('Delete this property?')) return;
     try {
