@@ -874,47 +874,60 @@ function PropertyForm({
   );
 }
 
-// ─── Summary strip ────────────────────────────────────────────────────────────
+// ─── Dashboard strip ──────────────────────────────────────────────────────────
 
 const INACTIVE_STAGES = ['Dead', 'Withdrawn'];
 
-function SummaryStrip({ properties }: { properties: Property[] }) {
-  const active = properties.filter(p => !INACTIVE_STAGES.includes(p.stage));
-
-  const totalSqFt = active.reduce((sum, p) => {
-    const n = parseInt(p.sizeSqFt.replace(/[^\d]/g, ''), 10);
-    return sum + (isNaN(n) ? 0 : n);
-  }, 0);
-
-  const psfVals = active
-    .map(p => parseFloat(p.rentPsf.replace(/[^\d.]/g, '')))
-    .filter(n => !isNaN(n) && n > 0);
-  const avgPsf = psfVals.length > 0 ? psfVals.reduce((a, b) => a + b, 0) / psfVals.length : null;
-
-  const totalCapVal = properties.reduce((sum, p) => {
-    const psf  = parseFloat(p.capValuePsf.replace(/[^\d.]/g, ''));
-    const sqft = parseFloat(p.sizeSqFt.replace(/[^\d.]/g, ''));
-    return sum + (isNaN(psf) || isNaN(sqft) || psf <= 0 || sqft <= 0 ? 0 : psf * sqft);
-  }, 0);
-
-  const stats = [
-    { label: 'Total Properties',   value: properties.length > 0 ? String(properties.length) : '—' },
-    { label: 'Active Properties',   value: active.length > 0 ? String(active.length) : '—' },
-    { label: 'Total Sq Ft',         value: totalSqFt > 0 ? totalSqFt.toLocaleString('en-GB') : '—' },
-    { label: 'Avg Rent psf',        value: avgPsf !== null ? `£${avgPsf.toFixed(2)}` : '—' },
-    { label: 'Est. Total Cap Value', value: totalCapVal > 0
-        ? totalCapVal.toLocaleString('en-GB', { style: 'currency', currency: 'GBP', maximumFractionDigits: 0 })
-        : '—' },
-  ];
+function DashboardStrip({ properties }: { properties: Property[] }) {
+  const liveCount = properties.filter(p => !INACTIVE_STAGES.includes(p.stage)).length;
+  const openTasks = properties
+    .filter(p => p.nextAction.trim())
+    .sort((a, b) => {
+      if (!a.nextActionDate && !b.nextActionDate) return 0;
+      if (!a.nextActionDate) return 1;
+      if (!b.nextActionDate) return -1;
+      const [ay, am, ad] = a.nextActionDate.split('-').map(Number);
+      const [by, bm, bd] = b.nextActionDate.split('-').map(Number);
+      return new Date(ay, am - 1, ad).getTime() - new Date(by, bm - 1, bd).getTime();
+    });
 
   return (
-    <div className="mx-4 md:mx-6 mb-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
-      {stats.map(s => (
-        <div key={s.label} className="bg-white border border-slate-200 rounded-xl px-3 py-2.5 flex flex-col gap-0.5">
-          <span className="text-lg font-bold text-slate-800 leading-tight tabular-nums">{s.value}</span>
-          <span className="text-[10px] font-medium text-slate-400 uppercase tracking-wide leading-snug">{s.label}</span>
+    <div className="mx-4 md:mx-6 mb-3 flex flex-col sm:flex-row gap-2">
+
+      {/* Stat cards */}
+      <div className="flex gap-2 sm:flex-col sm:w-40 flex-shrink-0">
+        <div className="flex-1 sm:flex-initial bg-white border border-slate-200 rounded-xl px-3 py-2.5 flex flex-col gap-0.5">
+          <span className="text-2xl font-bold text-slate-800 leading-tight tabular-nums">{liveCount}</span>
+          <span className="text-[10px] font-medium text-slate-400 uppercase tracking-wide leading-snug">Live Properties</span>
         </div>
-      ))}
+        <div className="flex-1 sm:flex-initial bg-white border border-slate-200 rounded-xl px-3 py-2.5 flex flex-col gap-0.5">
+          <span className="text-2xl font-bold text-slate-800 leading-tight tabular-nums">{openTasks.length}</span>
+          <span className="text-[10px] font-medium text-slate-400 uppercase tracking-wide leading-snug">Open Tasks</span>
+        </div>
+      </div>
+
+      {/* What Needs Doing feed */}
+      <div className="flex-1 bg-white border border-slate-200 rounded-xl px-4 py-2.5 min-h-[80px] flex flex-col justify-center">
+        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">What Needs Doing</p>
+        {openTasks.length === 0 ? (
+          <p className="text-xs text-slate-400">Nothing outstanding</p>
+        ) : (
+          <div className="divide-y divide-slate-100">
+            {openTasks.map(p => (
+              <div key={p.id} className="flex items-baseline justify-between gap-3 py-1.5 first:pt-0 last:pb-0">
+                <div className="flex items-baseline gap-2 min-w-0">
+                  <span className="font-semibold text-xs text-slate-800 flex-shrink-0">{p.name}</span>
+                  <span className="text-[11px] text-slate-400 truncate">{p.nextAction}</span>
+                </div>
+                {p.nextActionDate && (
+                  <span className="text-[11px] text-slate-400 flex-shrink-0">{fmtShortDate(p.nextActionDate)}</span>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
     </div>
   );
 }
