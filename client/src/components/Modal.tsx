@@ -10,7 +10,6 @@ export default function Modal({ title, onClose, children }: Props) {
   return (
     <div
       className="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-black/40"
-      onClick={e => e.target === e.currentTarget && onClose()}
     >
       <div className="bg-white w-full md:max-w-lg md:mx-4 rounded-t-2xl md:rounded-xl shadow-2xl max-h-[92vh] md:max-h-[90vh] flex flex-col">
         <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200">

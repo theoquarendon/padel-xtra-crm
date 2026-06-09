@@ -4,7 +4,7 @@ import { readRows, appendRow, updateRow, deleteRow } from '../sheets';
 const router = Router();
 const SHEET = 'Pipeline';
 
-// Sheet columns: A=Name | B=Location | C=Stage | D=DealType | E=SizeSqFt | F=Landlord | G=RentPsf | H=TotalRentPa | I=EstRatesPa | J=Notes | K=LastContacted | L=BrochureUrl | M=MapUrl
+// Sheet columns: A=Name | B=Location | C=Stage | D=DealType | E=SizeSqFt | F=Landlord | G=RentPsf | H=TotalRentPa | I=EstRatesPa | J=Notes | K=LastContacted | L=BrochureUrl | M=MapUrl | N=SaleLetType | O=CapValuePsf
 // No separate ID column — property name (col A) is the unique identifier
 const toObj = (r: string[]) => ({
   id:             r[0] || '',
@@ -21,12 +21,14 @@ const toObj = (r: string[]) => ({
   lastContacted:  r[10] || '',
   brochureUrl:    r[11] || '',
   mapUrl:         r[12] || '',
+  saleLetType:    r[13] || '',
+  capValuePsf:    r[14] || '',
 });
 
 const toRow = (p: ReturnType<typeof toObj>) => [
   p.name, p.location, p.stage, p.dealType, p.sizeSqFt,
   p.landlord, p.rentPsf, p.totalRentPa, p.estRatesPa, p.notes,
-  p.lastContacted, p.brochureUrl, p.mapUrl,
+  p.lastContacted, p.brochureUrl, p.mapUrl, p.saleLetType, p.capValuePsf,
 ];
 
 router.get('/', async (_req, res) => {
@@ -45,6 +47,7 @@ router.post('/', async (req, res) => {
       req.body.sizeSqFt, req.body.landlord, req.body.rentPsf,
       req.body.totalRentPa, req.body.estRatesPa, req.body.notes,
       req.body.lastContacted ?? '', req.body.brochureUrl ?? '', req.body.mapUrl ?? '',
+      req.body.saleLetType ?? '', req.body.capValuePsf ?? '',
     ]);
     await appendRow(SHEET, toRow(prop));
     res.json(prop);
@@ -60,6 +63,7 @@ router.put('/:id', async (req, res) => {
       req.body.sizeSqFt, req.body.landlord, req.body.rentPsf,
       req.body.totalRentPa, req.body.estRatesPa, req.body.notes,
       req.body.lastContacted ?? '', req.body.brochureUrl ?? '', req.body.mapUrl ?? '',
+      req.body.saleLetType ?? '', req.body.capValuePsf ?? '',
     ]);
     const ok = await updateRow(SHEET, decodeURIComponent(req.params.id), toRow(prop));
     ok ? res.json(prop) : res.status(404).json({ error: 'Not found' });
