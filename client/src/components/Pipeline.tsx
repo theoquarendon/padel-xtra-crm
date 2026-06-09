@@ -1266,15 +1266,15 @@ export default function Pipeline() {
     <div className="flex flex-col h-full bg-slate-50 overflow-hidden">
 
       {/* ── Top bar ── */}
-      <div className="flex items-center gap-3 px-4 md:px-6 pt-3 pb-2">
+      <div className="flex items-center gap-3 px-4 md:px-6 py-1.5">
         <p className="text-xs text-slate-400 flex-1">
           {total} propert{total !== 1 ? 'ies' : 'y'} in pipeline
         </p>
         <button
           onClick={() => setModal({ mode: 'add', stage: stages[0]?.name ?? 'Identified' })}
-          className="flex items-center gap-1.5 px-4 py-2.5 bg-padel-green hover:bg-padel-green-dark text-white text-sm font-medium rounded-lg transition-colors min-h-[44px]"
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-padel-green hover:bg-padel-green-dark text-white text-xs font-medium rounded-lg transition-colors"
         >
-          <span className="text-base leading-none">+</span>
+          <span className="text-sm leading-none">+</span>
           <span className="hidden sm:inline">Add Property</span>
           <span className="sm:hidden">Add</span>
         </button>
