@@ -958,7 +958,7 @@ function DashboardStrip({
 
       {/* What Needs Doing feed */}
       <div className="flex-1 bg-white border border-slate-200 rounded-lg px-3 py-2 flex flex-col">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">What Needs Doing</p>
+        <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 mb-1">What Needs Doing</p>
         {openTasks.length === 0 ? (
           <p className="text-xs text-slate-400">Nothing outstanding</p>
         ) : (
