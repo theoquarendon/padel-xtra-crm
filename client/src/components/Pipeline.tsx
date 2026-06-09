@@ -129,6 +129,7 @@ interface NoteEntry {
   text: string;
   timestamp: string;
   edited: boolean;
+  auto?: boolean;
 }
 
 function fmtTimestamp(iso: string): string {
