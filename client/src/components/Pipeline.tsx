@@ -770,6 +770,51 @@ function PropertyForm({
   );
 }
 
+// ─── Summary strip ────────────────────────────────────────────────────────────
+
+const INACTIVE_STAGES = ['Dead', 'Withdrawn'];
+
+function SummaryStrip({ properties }: { properties: Property[] }) {
+  const active = properties.filter(p => !INACTIVE_STAGES.includes(p.stage));
+
+  const totalSqFt = active.reduce((sum, p) => {
+    const n = parseInt(p.sizeSqFt.replace(/[^\d]/g, ''), 10);
+    return sum + (isNaN(n) ? 0 : n);
+  }, 0);
+
+  const psfVals = active
+    .map(p => parseFloat(p.rentPsf.replace(/[^\d.]/g, '')))
+    .filter(n => !isNaN(n) && n > 0);
+  const avgPsf = psfVals.length > 0 ? psfVals.reduce((a, b) => a + b, 0) / psfVals.length : null;
+
+  const totalCapVal = properties.reduce((sum, p) => {
+    const psf  = parseFloat(p.capValuePsf.replace(/[^\d.]/g, ''));
+    const sqft = parseFloat(p.sizeSqFt.replace(/[^\d.]/g, ''));
+    return sum + (isNaN(psf) || isNaN(sqft) || psf <= 0 || sqft <= 0 ? 0 : psf * sqft);
+  }, 0);
+
+  const stats = [
+    { label: 'Total Properties',   value: properties.length > 0 ? String(properties.length) : '—' },
+    { label: 'Active Properties',   value: active.length > 0 ? String(active.length) : '—' },
+    { label: 'Total Sq Ft',         value: totalSqFt > 0 ? totalSqFt.toLocaleString('en-GB') : '—' },
+    { label: 'Avg Rent psf',        value: avgPsf !== null ? `£${avgPsf.toFixed(2)}` : '—' },
+    { label: 'Est. Total Cap Value', value: totalCapVal > 0
+        ? totalCapVal.toLocaleString('en-GB', { style: 'currency', currency: 'GBP', maximumFractionDigits: 0 })
+        : '—' },
+  ];
+
+  return (
+    <div className="mx-4 md:mx-6 mb-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+      {stats.map(s => (
+        <div key={s.label} className="bg-white border border-slate-200 rounded-xl px-3 py-2.5 flex flex-col gap-0.5">
+          <span className="text-lg font-bold text-slate-800 leading-tight tabular-nums">{s.value}</span>
+          <span className="text-[10px] font-medium text-slate-400 uppercase tracking-wide leading-snug">{s.label}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export default function Pipeline() {
