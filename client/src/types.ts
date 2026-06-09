@@ -42,4 +42,6 @@ export interface Property {
   mapUrl: string;
   saleLetType: string;
   capValuePsf: string;
+  nextAction: string;
+  nextActionDate: string;
 }
