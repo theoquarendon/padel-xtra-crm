@@ -44,4 +44,5 @@ export interface Property {
   capValuePsf: string;
   nextAction: string;
   nextActionDate: string;
+  operatingProfit: string;
 }
