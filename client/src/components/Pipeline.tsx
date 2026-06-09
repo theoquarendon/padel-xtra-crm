@@ -878,7 +878,21 @@ function PropertyForm({
 
 const INACTIVE_STAGES = ['Dead', 'Withdrawn'];
 
-function DashboardStrip({ properties }: { properties: Property[] }) {
+function DashboardStrip({
+  properties,
+  onUpdateTask,
+  onCompleteTask,
+}: {
+  properties: Property[];
+  onUpdateTask: (id: string, nextAction: string, nextActionDate: string) => Promise<void>;
+  onCompleteTask: (id: string, taskText: string) => Promise<void>;
+}) {
+  const [expandedId,   setExpandedId]   = useState<string | null>(null);
+  const [draftAction,  setDraftAction]  = useState('');
+  const [draftDate,    setDraftDate]    = useState('');
+  const [tickConfirm,  setTickConfirm]  = useState(false);
+  const [saving,       setSaving]       = useState(false);
+
   const liveCount = properties.filter(p => !INACTIVE_STAGES.includes(p.stage)).length;
   const openTasks = properties
     .filter(p => p.nextAction.trim())
@@ -891,8 +905,44 @@ function DashboardStrip({ properties }: { properties: Property[] }) {
       return new Date(ay, am - 1, ad).getTime() - new Date(by, bm - 1, bd).getTime();
     });
 
+  const openRow = (p: Property) => {
+    setExpandedId(p.id);
+    setDraftAction(p.nextAction);
+    setDraftDate(p.nextActionDate);
+    setTickConfirm(false);
+  };
+
+  const closeRow = () => {
+    setExpandedId(null);
+    setDraftAction('');
+    setDraftDate('');
+    setTickConfirm(false);
+  };
+
+  const handleSave = async (id: string) => {
+    setSaving(true);
+    try {
+      await onUpdateTask(id, draftAction, draftDate);
+      closeRow();
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleComplete = async (id: string) => {
+    setSaving(true);
+    try {
+      await onCompleteTask(id, draftAction);
+      closeRow();
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const feedInputCls = 'w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-padel-green focus:border-padel-green';
+
   return (
-    <div className="mx-4 md:mx-6 mb-3 flex flex-col sm:flex-row gap-2">
+    <div className="mx-4 md:mx-6 mb-3 flex flex-col sm:flex-row gap-2 items-start">
 
       {/* Stat cards */}
       <div className="flex gap-2 sm:flex-col sm:w-40 flex-shrink-0">
@@ -907,23 +957,101 @@ function DashboardStrip({ properties }: { properties: Property[] }) {
       </div>
 
       {/* What Needs Doing feed */}
-      <div className="flex-1 bg-white border border-slate-200 rounded-xl px-4 py-2.5 min-h-[80px] flex flex-col justify-center">
+      <div className="flex-1 bg-white border border-slate-200 rounded-xl px-4 py-3 flex flex-col">
         <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">What Needs Doing</p>
         {openTasks.length === 0 ? (
           <p className="text-xs text-slate-400">Nothing outstanding</p>
         ) : (
           <div className="divide-y divide-slate-100">
-            {openTasks.map(p => (
-              <div key={p.id} className="flex items-baseline justify-between gap-3 py-1.5 first:pt-0 last:pb-0">
-                <div className="flex items-baseline gap-2 min-w-0">
-                  <span className="font-semibold text-xs text-slate-800 flex-shrink-0">{p.name}</span>
-                  <span className="text-[11px] text-slate-400 truncate">{p.nextAction}</span>
+            {openTasks.map(p => {
+              const isExpanded = expandedId === p.id;
+
+              if (isExpanded) {
+                return (
+                  <div key={p.id} className="py-3 first:pt-0 last:pb-0 space-y-2">
+
+                    {/* Property name header */}
+                    <p className="font-semibold text-xs text-slate-800">{p.name}</p>
+
+                    {/* Editable fields */}
+                    <input
+                      autoFocus
+                      value={draftAction}
+                      onChange={e => { setDraftAction(e.target.value); setTickConfirm(false); }}
+                      className={feedInputCls}
+                      placeholder="Next action..."
+                    />
+                    <input
+                      type="date"
+                      value={draftDate}
+                      onChange={e => setDraftDate(e.target.value)}
+                      className={feedInputCls}
+                    />
+
+                    {/* Tick confirm */}
+                    {tickConfirm ? (
+                      <div className="flex items-center gap-2 px-3 py-2 bg-emerald-50 border border-emerald-200 rounded-lg">
+                        <span className="text-xs text-emerald-700 flex-1">Mark as complete?</span>
+                        <button
+                          type="button"
+                          onClick={() => handleComplete(p.id)}
+                          disabled={saving}
+                          className="text-xs font-semibold px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-md transition-colors disabled:opacity-50"
+                        >Confirm</button>
+                        <button
+                          type="button"
+                          onClick={() => setTickConfirm(false)}
+                          className="text-xs px-2.5 py-1 border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-md transition-colors"
+                        >Cancel</button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => handleSave(p.id)}
+                          disabled={saving}
+                          className="text-xs font-semibold px-3 py-1.5 bg-padel-green hover:bg-padel-green-dark text-white rounded-lg transition-colors disabled:opacity-50"
+                        >{saving ? 'Saving…' : 'Save'}</button>
+                        <button
+                          type="button"
+                          onClick={closeRow}
+                          disabled={saving}
+                          className="text-xs px-3 py-1.5 border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-lg transition-colors disabled:opacity-50"
+                        >Cancel</button>
+                        <button
+                          type="button"
+                          onClick={() => setTickConfirm(true)}
+                          disabled={saving || !draftAction.trim()}
+                          className="ml-auto inline-flex items-center gap-1 text-xs text-emerald-600 hover:text-emerald-700 font-medium transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                          title="Mark as complete"
+                        >
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                          </svg>
+                          Complete
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+
+              return (
+                <div
+                  key={p.id}
+                  onClick={() => openRow(p)}
+                  className="flex items-baseline justify-between gap-3 py-1.5 first:pt-0 last:pb-0 cursor-pointer hover:bg-slate-50 -mx-1 px-1 rounded transition-colors"
+                >
+                  <div className="flex items-baseline gap-2 min-w-0">
+                    <span className="font-semibold text-xs text-slate-800 flex-shrink-0">{p.name}</span>
+                    <span className="text-[11px] text-slate-400 truncate">{p.nextAction}</span>
+                  </div>
+                  {p.nextActionDate && (
+                    <span className="text-[11px] text-slate-400 flex-shrink-0">{fmtShortDate(p.nextActionDate)}</span>
+                  )}
                 </div>
-                {p.nextActionDate && (
-                  <span className="text-[11px] text-slate-400 flex-shrink-0">{fmtShortDate(p.nextActionDate)}</span>
-                )}
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
