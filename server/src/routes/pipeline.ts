@@ -68,6 +68,7 @@ router.put('/:id', async (req, res) => {
       req.body.totalRentPa, req.body.estRatesPa, req.body.notes,
       req.body.lastContacted ?? '', req.body.brochureUrl ?? '', req.body.mapUrl ?? '',
       req.body.saleLetType ?? '', req.body.capValuePsf ?? '',
+      req.body.nextAction ?? '', req.body.nextActionDate ?? '',
     ]);
     const ok = await updateRow(SHEET, decodeURIComponent(req.params.id), toRow(prop));
     ok ? res.json(prop) : res.status(404).json({ error: 'Not found' });
