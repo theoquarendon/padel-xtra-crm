@@ -4,34 +4,35 @@ import { readRows, appendRow, updateRow, deleteRow } from '../sheets';
 const router = Router();
 const SHEET = 'Pipeline';
 
-// Sheet columns: A=Name | B=Location | C=Stage | D=DealType | E=SizeSqFt | F=Landlord | G=RentPsf | H=TotalRentPa | I=EstRatesPa | J=Notes | K=LastContacted | L=BrochureUrl | M=MapUrl | N=SaleLetType | O=CapValuePsf | P=NextAction | Q=NextActionDate
+// Sheet columns: A=Name | B=Location | C=Stage | D=DealType | E=SizeSqFt | F=Landlord | G=RentPsf | H=TotalRentPa | I=EstRatesPa | J=Notes | K=LastContacted | L=BrochureUrl | M=MapUrl | N=SaleLetType | O=CapValuePsf | P=NextAction | Q=NextActionDate | R=OperatingProfit
 // No separate ID column — property name (col A) is the unique identifier
 const toObj = (r: string[]) => ({
-  id:             r[0] || '',
-  name:           r[0] || '',
-  location:       r[1] || '',
-  stage:          r[2] || 'Identified',
-  dealType:       r[3] || '',
-  sizeSqFt:       r[4] || '',
-  landlord:       r[5] || '',
-  rentPsf:        r[6] || '',
-  totalRentPa:    r[7] || '',
-  estRatesPa:     r[8] || '',
-  notes:          r[9] || '',
-  lastContacted:  r[10] || '',
-  brochureUrl:    r[11] || '',
-  mapUrl:         r[12] || '',
-  saleLetType:    r[13] || '',
-  capValuePsf:    r[14] || '',
-  nextAction:     r[15] || '',
-  nextActionDate: r[16] || '',
+  id:              r[0] || '',
+  name:            r[0] || '',
+  location:        r[1] || '',
+  stage:           r[2] || 'Identified',
+  dealType:        r[3] || '',
+  sizeSqFt:        r[4] || '',
+  landlord:        r[5] || '',
+  rentPsf:         r[6] || '',
+  totalRentPa:     r[7] || '',
+  estRatesPa:      r[8] || '',
+  notes:           r[9] || '',
+  lastContacted:   r[10] || '',
+  brochureUrl:     r[11] || '',
+  mapUrl:          r[12] || '',
+  saleLetType:     r[13] || '',
+  capValuePsf:     r[14] || '',
+  nextAction:      r[15] || '',
+  nextActionDate:  r[16] || '',
+  operatingProfit: r[17] || '',
 });
 
 const toRow = (p: ReturnType<typeof toObj>) => [
   p.name, p.location, p.stage, p.dealType, p.sizeSqFt,
   p.landlord, p.rentPsf, p.totalRentPa, p.estRatesPa, p.notes,
   p.lastContacted, p.brochureUrl, p.mapUrl, p.saleLetType, p.capValuePsf,
-  p.nextAction, p.nextActionDate,
+  p.nextAction, p.nextActionDate, p.operatingProfit,
 ];
 
 router.get('/', async (_req, res) => {
