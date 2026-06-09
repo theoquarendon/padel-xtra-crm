@@ -258,7 +258,7 @@ function PropertyCard({
             )}
 
             {/* Financials */}
-            {(property.rentPsf || property.totalRentPa) && (
+            {(property.rentPsf || property.totalRentPa || property.operatingProfit) && (
               <div className="flex flex-wrap gap-x-3 mt-1">
                 {property.rentPsf && (
                   <span className="text-[11px] text-slate-500">
@@ -268,6 +268,11 @@ function PropertyCard({
                 {property.totalRentPa && (
                   <span className="text-[11px] text-slate-500">
                     <span className="text-slate-400">£</span>{fmtInt(property.totalRentPa)}<span className="text-slate-400"> pa</span>
+                  </span>
+                )}
+                {property.operatingProfit && (
+                  <span className="text-[11px] text-slate-500">
+                    <span className="text-slate-400">£</span>{fmtInt(property.operatingProfit)}<span className="text-slate-400"> op. profit</span>
                   </span>
                 )}
               </div>
