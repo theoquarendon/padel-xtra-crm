@@ -942,22 +942,22 @@ function DashboardStrip({
   const feedInputCls = 'w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-padel-green focus:border-padel-green';
 
   return (
-    <div className="mx-4 md:mx-6 mb-3 flex flex-col sm:flex-row gap-2 items-start">
+    <div className="mx-4 md:mx-6 mb-1.5 flex flex-col sm:flex-row gap-1.5 items-start">
 
       {/* Stat cards */}
-      <div className="flex gap-2 sm:flex-col sm:w-40 flex-shrink-0">
-        <div className="flex-1 sm:flex-initial bg-white border border-slate-200 rounded-xl px-3 py-2.5 flex flex-col gap-0.5">
-          <span className="text-2xl font-bold text-slate-800 leading-tight tabular-nums">{liveCount}</span>
-          <span className="text-[10px] font-medium text-slate-400 uppercase tracking-wide leading-snug">Live Properties</span>
+      <div className="flex gap-1.5 sm:flex-col sm:w-36 flex-shrink-0">
+        <div className="flex-1 sm:flex-initial bg-white border border-slate-200 rounded-lg px-3 py-1.5 flex flex-col gap-0">
+          <span className="text-xl font-bold text-slate-800 leading-tight tabular-nums">{liveCount}</span>
+          <span className="text-[9px] font-medium text-slate-400 uppercase tracking-wide leading-snug">Live Properties</span>
         </div>
-        <div className="flex-1 sm:flex-initial bg-white border border-slate-200 rounded-xl px-3 py-2.5 flex flex-col gap-0.5">
-          <span className="text-2xl font-bold text-slate-800 leading-tight tabular-nums">{openTasks.length}</span>
-          <span className="text-[10px] font-medium text-slate-400 uppercase tracking-wide leading-snug">Open Tasks</span>
+        <div className="flex-1 sm:flex-initial bg-white border border-slate-200 rounded-lg px-3 py-1.5 flex flex-col gap-0">
+          <span className="text-xl font-bold text-slate-800 leading-tight tabular-nums">{openTasks.length}</span>
+          <span className="text-[9px] font-medium text-slate-400 uppercase tracking-wide leading-snug">Open Tasks</span>
         </div>
       </div>
 
       {/* What Needs Doing feed */}
-      <div className="flex-1 bg-white border border-slate-200 rounded-xl px-4 py-3 flex flex-col">
+      <div className="flex-1 bg-white border border-slate-200 rounded-lg px-3 py-2 flex flex-col">
         <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2">What Needs Doing</p>
         {openTasks.length === 0 ? (
           <p className="text-xs text-slate-400">Nothing outstanding</p>
