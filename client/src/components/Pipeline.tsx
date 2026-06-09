@@ -86,8 +86,9 @@ function sanitiseProp(p: import('../types').Property): import('../types').Proper
     mapUrl:         toStr(p.mapUrl),
     saleLetType:    toStr(p.saleLetType),
     capValuePsf:    toStr(p.capValuePsf),
-    nextAction:     toStr(p.nextAction),
-    nextActionDate: toStr(p.nextActionDate),
+    nextAction:      toStr(p.nextAction),
+    nextActionDate:  toStr(p.nextActionDate),
+    operatingProfit: toStr(p.operatingProfit),
   };
 }
 
