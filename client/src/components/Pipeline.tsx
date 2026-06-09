@@ -77,6 +77,23 @@ function daysAgo(dateStr: string): string {
   return `${diff} days ago`;
 }
 
+// ─── Next action badge ────────────────────────────────────────────────────────
+
+function nextActionBadge(action: string, dateStr: string) {
+  if (!dateStr) return null;
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const date = new Date(y, m - 1, d);
+  if (isNaN(date.getTime())) return null;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const diff = Math.floor((date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+  const label = action.trim() || 'Follow-up';
+  if (diff < 0)   return { text: `⚠️ ${label} — overdue`,                              cls: 'bg-red-100 text-red-700 border-red-200'     };
+  if (diff === 0) return { text: `⚠️ ${label} — due today`,                            cls: 'bg-red-100 text-red-700 border-red-200'     };
+  if (diff <= 7)  return { text: `📅 ${label} — in ${diff} day${diff !== 1 ? 's' : ''}`, cls: 'bg-amber-100 text-amber-700 border-amber-200' };
+  return           { text: `📅 ${label}`,                                               cls: 'bg-green-100 text-green-700 border-green-200' };
+}
+
 // ─── Notes helpers ────────────────────────────────────────────────────────────
 
 interface NoteEntry {
