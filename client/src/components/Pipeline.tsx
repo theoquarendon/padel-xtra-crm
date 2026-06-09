@@ -539,8 +539,23 @@ function PropertyForm({
 }) {
   const [form, setForm] = useState(initial);
   const [managingDealTypes, setManagingDealTypes] = useState(false);
+  const [tickConfirm, setTickConfirm] = useState(false);
 
   const handleNotesChange = (json: string) => setForm(prev => ({ ...prev, notes: json }));
+
+  const handleTickComplete = () => {
+    const taskText = form.nextAction.trim();
+    const autoNote: NoteEntry = {
+      id: String(Date.now()),
+      text: `Task completed: ${taskText}`,
+      timestamp: new Date().toISOString(),
+      edited: false,
+      auto: true,
+    };
+    const existing = parseNotes(form.notes);
+    const newNotes = JSON.stringify([autoNote, ...existing]);
+    onSave({ ...form, nextAction: '', nextActionDate: '', notes: newNotes });
+  };
 
   const inputCls = 'w-full border border-slate-300 rounded-lg px-3 py-3 md:py-2 text-sm focus:outline-none focus:ring-2 focus:ring-padel-green focus:border-padel-green';
   const labelCls = 'block text-xs font-medium text-slate-600 mb-1';
