@@ -1040,7 +1040,7 @@ function DashboardStrip({
                 <div
                   key={p.id}
                   onClick={() => openRow(p)}
-                  className="flex items-baseline justify-between gap-3 py-1.5 first:pt-0 last:pb-0 cursor-pointer hover:bg-slate-50 -mx-1 px-1 rounded transition-colors"
+                  className="flex items-baseline justify-between gap-3 py-1 first:pt-0 last:pb-0 cursor-pointer hover:bg-slate-50 -mx-1 px-1 rounded transition-colors"
                 >
                   <div className="flex items-baseline gap-2 min-w-0">
                     <span className="font-semibold text-xs text-slate-800 flex-shrink-0">{p.name}</span>
