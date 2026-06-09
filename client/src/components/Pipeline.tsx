@@ -1281,7 +1281,11 @@ export default function Pipeline() {
       </div>
 
       {/* ── Dashboard strip ── */}
-      <DashboardStrip properties={properties} />
+      <DashboardStrip
+        properties={properties}
+        onUpdateTask={handleUpdateTask}
+        onCompleteTask={handleCompleteTask}
+      />
 
       {/* ── Target Locations Panel ── */}
       <div className="mx-4 md:mx-6 mb-3 bg-white border border-slate-200 rounded-xl overflow-hidden">
