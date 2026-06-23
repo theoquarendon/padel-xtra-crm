@@ -292,7 +292,7 @@ function PropertyCard({
 
 
             {/* Link icons — only shown when URLs exist */}
-            {(property.brochureUrl || property.mapUrl) && (
+            {(property.brochureUrl || property.mapUrl || property.floorPlanUrl) && (
               <div className="flex items-center gap-1.5 mt-1.5">
                 {property.brochureUrl && (
                   <button
@@ -317,6 +317,19 @@ function PropertyCard({
                         d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                         d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                  </button>
+                )}
+                {property.floorPlanUrl && (
+                  <button
+                    onClick={e => { e.stopPropagation(); window.open(property.floorPlanUrl, '_blank', 'noopener'); }}
+                    title="Open floor plan"
+                    className="w-6 h-6 flex items-center justify-center rounded transition-colors hover:bg-purple-50"
+                    style={{ color: '#7c3aed' }}
+                  >
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                        d="M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zM14 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
                     </svg>
                   </button>
                 )}
