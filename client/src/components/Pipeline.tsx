@@ -863,6 +863,34 @@ function PropertyForm({
       </div>
 
       <div>
+        <label className={labelCls}>Floor Plan URL</label>
+        <div className="flex gap-2 items-stretch">
+          <input
+            type="url"
+            value={form.floorPlanUrl}
+            onChange={set('floorPlanUrl')}
+            className={inputCls + ' flex-1'}
+            placeholder="https://..."
+          />
+          {form.floorPlanUrl && (
+            <a
+              href={form.floorPlanUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Open floor plan"
+              className="flex-shrink-0 w-10 flex items-center justify-center rounded-lg border transition-colors cursor-pointer"
+              style={{ borderColor: '#c4b5fd', backgroundColor: '#f5f3ff', color: '#7c3aed' }}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zM14 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
+              </svg>
+            </a>
+          )}
+        </div>
+      </div>
+
+      <div>
         <label className={labelCls}>Notes</label>
         <NotesTimeline value={form.notes} onChange={handleNotesChange} />
       </div>
