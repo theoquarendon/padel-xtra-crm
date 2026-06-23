@@ -4,7 +4,7 @@ import { readRows, appendRow, updateRow, deleteRow } from '../sheets';
 const router = Router();
 const SHEET = 'Pipeline';
 
-// Sheet columns: A=Name | B=Location | C=Stage | D=DealType | E=SizeSqFt | F=Landlord | G=RentPsf | H=TotalRentPa | I=EstRatesPa | J=Notes | K=LastContacted | L=BrochureUrl | M=MapUrl | N=SaleLetType | O=CapValuePsf | P=NextAction | Q=NextActionDate | R=OperatingProfit
+// Sheet columns: A=Name | B=Location | C=Stage | D=DealType | E=SizeSqFt | F=Landlord | G=RentPsf | H=TotalRentPa | I=EstRatesPa | J=Notes | K=LastContacted | L=BrochureUrl | M=MapUrl | N=SaleLetType | O=CapValuePsf | P=NextAction | Q=NextActionDate | R=OperatingProfit | S=FloorPlanUrl
 // No separate ID column — property name (col A) is the unique identifier
 const toObj = (r: string[]) => ({
   id:              r[0] || '',
@@ -26,13 +26,14 @@ const toObj = (r: string[]) => ({
   nextAction:      r[15] || '',
   nextActionDate:  r[16] || '',
   operatingProfit: r[17] || '',
+  floorPlanUrl:    r[18] || '',
 });
 
 const toRow = (p: ReturnType<typeof toObj>) => [
   p.name, p.location, p.stage, p.dealType, p.sizeSqFt,
   p.landlord, p.rentPsf, p.totalRentPa, p.estRatesPa, p.notes,
   p.lastContacted, p.brochureUrl, p.mapUrl, p.saleLetType, p.capValuePsf,
-  p.nextAction, p.nextActionDate, p.operatingProfit,
+  p.nextAction, p.nextActionDate, p.operatingProfit, p.floorPlanUrl,
 ];
 
 router.get('/', async (_req, res) => {
