@@ -519,7 +519,7 @@ function NotesTimeline({ value, onChange }: { value: string; onChange: (json: st
 const EMPTY_PROPERTY: Omit<Property, 'id'> = {
   name: '', location: '', stage: 'Identified', dealType: '',
   sizeSqFt: '', landlord: '', rentPsf: '', totalRentPa: '', estRatesPa: '',
-  notes: '', lastContacted: '', brochureUrl: '', mapUrl: '',
+  notes: '', lastContacted: '', brochureUrl: '', mapUrl: '', floorPlanUrl: '',
   saleLetType: '', capValuePsf: '',
   nextAction: '', nextActionDate: '', operatingProfit: '',
 };
