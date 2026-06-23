@@ -40,6 +40,7 @@ export interface Property {
   lastContacted: string;
   brochureUrl: string;
   mapUrl: string;
+  floorPlanUrl: string;
   saleLetType: string;
   capValuePsf: string;
   nextAction: string;
