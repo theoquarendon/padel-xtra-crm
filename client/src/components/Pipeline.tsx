@@ -1279,8 +1279,8 @@ export default function Pipeline() {
     };
     const newNotes = JSON.stringify([autoNote, ...parseNotes(prop.notes)]);
     const updated = sanitiseProp({ ...prop, nextAction: '', nextActionDate: '', notes: newNotes });
-    await api.pipeline.update(encodeURIComponent(id), updated);
-    setProperties(prev => prev.map(p => p.id === id ? updated : p));
+    const serverProp = await api.pipeline.update(encodeURIComponent(id), updated);
+    setProperties(prev => prev.map(p => p.id === id ? sanitiseProp(serverProp) : p));
   };
 
   const handleDelete = async (id: string) => {
