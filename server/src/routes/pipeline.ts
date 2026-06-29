@@ -74,7 +74,7 @@ router.put('/:id', async (req, res) => {
       req.body.nextAction ?? '', req.body.nextActionDate ?? '',
       req.body.operatingProfit ?? '', req.body.floorPlanUrl ?? '',
     ]);
-    const ok = await updateRow(SHEET, decodeURIComponent(req.params.id), toRow(prop));
+    const ok = await updateRow(SHEET, req.params.id, toRow(prop));
     ok ? res.json(prop) : res.status(404).json({ error: 'Not found' });
   } catch (e) {
     res.status(500).json({ error: String(e) });
