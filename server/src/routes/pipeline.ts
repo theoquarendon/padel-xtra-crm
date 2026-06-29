@@ -56,6 +56,7 @@ router.get('/', async (_req, res) => {
 });
 
 router.post('/', async (req, res) => {
+  if (!req.body?.name) return res.status(400).json({ error: 'name required' });
   try {
     const prop = toObj([
       req.body.name, req.body.location, req.body.stage, req.body.dealType,
