@@ -1263,8 +1263,8 @@ export default function Pipeline() {
     const prop = properties.find(p => p.id === id);
     if (!prop) return;
     const updated = sanitiseProp({ ...prop, nextAction, nextActionDate });
-    await api.pipeline.update(encodeURIComponent(id), updated);
-    setProperties(prev => prev.map(p => p.id === id ? updated : p));
+    const serverProp = await api.pipeline.update(encodeURIComponent(id), updated);
+    setProperties(prev => prev.map(p => p.id === id ? sanitiseProp(serverProp) : p));
   };
 
   const handleCompleteTask = async (id: string, taskText: string) => {
