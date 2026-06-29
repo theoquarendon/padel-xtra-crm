@@ -43,15 +43,21 @@ export async function updateRow(sheetName: string, id: string, values: string[])
   const sheets = getSheets();
   const rows = await readRows(sheetName);
 
-  // Primary: match by UUID stored in col T (index 19)
+  // Lookup 1: UUID in col T — fast path for already-migrated rows
   let rowIndex = rows.findIndex(r => r[19] && String(r[19]).trim() === String(id).trim());
   let resolvedUUID = id;
 
   if (rowIndex === -1) {
-    // Fallback: legacy rows identified by property name in col A
+    // Lookup 2: id as property name in col A (legacy: id was the name before UUIDs)
     rowIndex = rows.findIndex(r => String(r[0]).trim() === String(id).trim());
+
+    // Lookup 3: property name from values[0] — handles case where client already has a UUID
+    // as property.id but col T hasn't been written yet (migration gap after a previous PUT).
+    if (rowIndex === -1 && values[0]) {
+      rowIndex = rows.findIndex(r => String(r[0]).trim() === String(values[0]).trim());
+    }
+
     if (rowIndex !== -1) {
-      // Reuse UUID if already written by a previous update, otherwise generate one
       const existingUUID = rows[rowIndex][19];
       resolvedUUID = existingUUID ? String(existingUUID).trim() : randomUUID();
     }
