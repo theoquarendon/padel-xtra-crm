@@ -1,6 +1,14 @@
 import { Router } from 'express';
 import { getConfigValue, setConfigValue } from '../sheets';
 
+function errMsg(e: unknown): string {
+  if (!(e instanceof Error)) return String(e);
+  const google = (e as any).response?.data?.error;
+  const detail = google ? ` [Google ${google.code}: ${google.message}]` : '';
+  console.error('[config] error:', e.message + detail, (e as any).response?.data ?? '');
+  return e.message + detail;
+}
+
 const router = Router();
 
 router.get('/:key', async (req, res) => {
