@@ -46,15 +46,18 @@ export async function updateRow(sheetName: string, id: string, values: string[])
   // Lookup 1: UUID in col T — fast path for already-migrated rows
   let rowIndex = rows.findIndex(r => r[19] && String(r[19]).trim() === String(id).trim());
   let resolvedUUID = id;
+  console.log('[updateRow] id=', JSON.stringify(id), '| values[0]=', JSON.stringify(values[0]), '| rows.length=', rows.length, '| lookup1=', rowIndex);
 
   if (rowIndex === -1) {
     // Lookup 2: id as property name in col A (legacy: id was the name before UUIDs)
     rowIndex = rows.findIndex(r => String(r[0]).trim() === String(id).trim());
+    console.log('[updateRow] lookup2=', rowIndex);
 
     // Lookup 3: property name from values[0] — handles case where client already has a UUID
     // as property.id but col T hasn't been written yet (migration gap after a previous PUT).
     if (rowIndex === -1 && values[0]) {
       rowIndex = rows.findIndex(r => String(r[0]).trim() === String(values[0]).trim());
+      console.log('[updateRow] lookup3=', rowIndex, '| sample col-A values:', rows.slice(0, 5).map(r => JSON.stringify(r[0])));
     }
 
     if (rowIndex !== -1) {
