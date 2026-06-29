@@ -189,7 +189,7 @@ function PropertyCard({
   stageColor: string;
   isDead: boolean;
   onEdit: (p: Property) => void;
-  onDelete: (id: string) => void;
+  onDelete: (id: string, name: string) => void;
 }) {
   const dtStyle = getDtStyle(property.dealType);
 
