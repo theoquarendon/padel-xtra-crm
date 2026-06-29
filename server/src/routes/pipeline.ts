@@ -83,7 +83,7 @@ router.put('/:id', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
   try {
-    const ok = await deleteRow(SHEET, decodeURIComponent(req.params.id));
+    const ok = await deleteRow(SHEET, req.params.id);
     ok ? res.json({ ok: true }) : res.status(404).json({ error: 'Not found' });
   } catch (e) {
     res.status(500).json({ error: String(e) });
