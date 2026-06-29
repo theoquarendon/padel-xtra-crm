@@ -1287,11 +1287,13 @@ export default function Pipeline() {
   };
 
   const handleDelete = async (id: string, name: string) => {
+    console.log('[delete] id:', id, '| name:', name);
     if (!confirm('Delete this property?')) return;
     try {
       await api.pipeline.remove(encodeURIComponent(id), name);
       setProperties(prev => prev.filter(p => p.id !== id));
     } catch (e) {
+      console.error('[delete] failed:', (e as Error).message, '| id:', id, '| name:', name);
       alert('Failed to delete: ' + (e as Error).message);
     }
   };
