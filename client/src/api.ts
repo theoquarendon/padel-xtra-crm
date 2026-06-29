@@ -35,7 +35,15 @@ function crud<T>(base: string) {
 }
 
 export const api = {
-  pipeline: crud<import('./types').Property>('/pipeline'),
+  pipeline: {
+    ...crud<import('./types').Property>('/pipeline'),
+    // Override remove to send property name as ?name= so the server can fall back to name
+    // lookup when the client's id is a UUID that hasn't been written to col T yet.
+    remove: (id: string, name?: string) => {
+      const qs = name ? `?name=${encodeURIComponent(name)}` : '';
+      return request<{ ok: boolean }>(`/pipeline/${id}${qs}`, { method: 'DELETE' });
+    },
+  },
   config: {
     get: (key: string) =>
       request<{ value: string | null }>(`/config/${key}`),
