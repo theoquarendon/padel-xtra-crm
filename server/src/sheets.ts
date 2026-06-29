@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import { google } from 'googleapis';
 
 const SPREADSHEET_ID = process.env.GOOGLE_SPREADSHEET_ID!;
