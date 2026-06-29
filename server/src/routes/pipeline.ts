@@ -93,7 +93,8 @@ router.put('/:id', async (req, res) => {
       req.body.id ?? '', // col T slot — may be UUID or name; updateRow normalises it
     ]);
     const resolvedUUID = await updateRow(SHEET, req.params.id, toRow(prop));
-    if (resolvedUUID === null) return res.status(404).json({ error: 'Not found' });
+    console.log('[PUT] resolvedUUID=', resolvedUUID, '| lookup id=', req.params.id, '| name=', prop.name);
+    if (resolvedUUID === null) return res.status(404).json({ error: 'Not found', debug: { lookupId: req.params.id, name: prop.name } });
     res.json({ ...prop, id: resolvedUUID });
   } catch (e) {
     res.status(500).json({ error: errMsg(e) });
