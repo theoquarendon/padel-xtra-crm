@@ -1234,9 +1234,14 @@ export default function Pipeline() {
     if (!prop || prop.stage === newStage) return;
     const updated = { ...prop, stage: newStage };
     setProperties(prev => prev.map(p => p.id === id ? updated : p));
-    api.pipeline.update(encodeURIComponent(id), updated).catch(() =>
-      setProperties(prev => prev.map(p => p.id === id ? prop : p))
-    );
+    api.pipeline.update(encodeURIComponent(id), updated)
+      .then(serverProp => {
+        // Propagate stable UUID from server (migrates legacy name-based ids)
+        setProperties(prev => prev.map(p => p.id === id ? serverProp : p));
+      })
+      .catch(() =>
+        setProperties(prev => prev.map(p => p.id === id ? prop : p))
+      );
   };
 
   const handleSave = async (form: Omit<Property, 'id'> & { id?: string }) => {
