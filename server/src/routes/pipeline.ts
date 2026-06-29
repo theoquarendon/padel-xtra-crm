@@ -102,12 +102,12 @@ router.put('/:id', async (req, res) => {
 });
 
 router.delete('/:id', async (req, res) => {
+  const nameHint = typeof req.query.name === 'string' ? req.query.name : undefined;
+  console.log('[DELETE] params.id=', JSON.stringify(req.params.id), '| query.name=', JSON.stringify(nameHint));
   try {
-    // nameHint is the property name sent by the client as ?name=... query param.
-    // Used as a third lookup fallback when req.params.id is a UUID but col T is still empty.
-    const nameHint = typeof req.query.name === 'string' ? req.query.name : undefined;
     const ok = await deleteRow(SHEET, req.params.id, nameHint);
-    ok ? res.json({ ok: true }) : res.status(404).json({ error: 'Not found' });
+    console.log('[DELETE] result=', ok, '| id=', req.params.id, '| nameHint=', nameHint);
+    ok ? res.json({ ok: true }) : res.status(404).json({ error: 'Not found', debug: { lookupId: req.params.id, nameHint } });
   } catch (e) {
     res.status(500).json({ error: errMsg(e) });
   }
