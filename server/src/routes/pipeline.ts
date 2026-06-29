@@ -51,7 +51,7 @@ router.get('/', async (_req, res) => {
     const rows = await readRows(SHEET);
     res.json(rows.filter(r => r[0]).map(toObj));
   } catch (e) {
-    res.status(500).json({ error: String(e) });
+    res.status(500).json({ error: errMsg(e) });
   }
 });
 
@@ -70,7 +70,7 @@ router.post('/', async (req, res) => {
     await appendRow(SHEET, toRow(prop));
     res.json(prop);
   } catch (e) {
-    res.status(500).json({ error: String(e) });
+    res.status(500).json({ error: errMsg(e) });
   }
 });
 
@@ -93,7 +93,7 @@ router.put('/:id', async (req, res) => {
     if (resolvedUUID === null) return res.status(404).json({ error: 'Not found' });
     res.json({ ...prop, id: resolvedUUID });
   } catch (e) {
-    res.status(500).json({ error: String(e) });
+    res.status(500).json({ error: errMsg(e) });
   }
 });
 
@@ -105,7 +105,7 @@ router.delete('/:id', async (req, res) => {
     const ok = await deleteRow(SHEET, req.params.id, nameHint);
     ok ? res.json({ ok: true }) : res.status(404).json({ error: 'Not found' });
   } catch (e) {
-    res.status(500).json({ error: String(e) });
+    res.status(500).json({ error: errMsg(e) });
   }
 });
 
