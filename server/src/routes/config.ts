@@ -16,7 +16,7 @@ router.get('/:key', async (req, res) => {
     const value = await getConfigValue(req.params.key);
     res.json({ value });
   } catch (e) {
-    res.status(500).json({ error: String(e) });
+    res.status(500).json({ error: errMsg(e) });
   }
 });
 
@@ -28,7 +28,7 @@ router.put('/:key', async (req, res) => {
     await setConfigValue(req.params.key, str);
     res.json({ ok: true });
   } catch (e) {
-    res.status(500).json({ error: String(e) });
+    res.status(500).json({ error: errMsg(e) });
   }
 });
 
