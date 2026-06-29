@@ -1231,17 +1231,20 @@ export default function Pipeline() {
     const { draggableId: id, destination } = result;
     const newStage = destination.droppableId;
     const prop = properties.find(p => p.id === id);
+    console.log('[drag] draggableId:', id, '| prop found:', !!prop, '| prop.name:', prop?.name, '| newStage:', newStage);
     if (!prop || prop.stage === newStage) return;
     const updated = { ...prop, stage: newStage };
     setProperties(prev => prev.map(p => p.id === id ? updated : p));
     api.pipeline.update(encodeURIComponent(id), updated)
       .then(serverProp => {
+        console.log('[drag] PUT ok → server returned id:', serverProp.id, 'name:', serverProp.name);
         // Propagate stable UUID from server (migrates legacy name-based ids)
         setProperties(prev => prev.map(p => p.id === id ? serverProp : p));
       })
-      .catch(() =>
-        setProperties(prev => prev.map(p => p.id === id ? prop : p))
-      );
+      .catch((e: Error) => {
+        console.error('[drag] PUT failed:', e.message, '| sent id:', id, 'name:', updated.name);
+        setProperties(prev => prev.map(p => p.id === id ? prop : p));
+      });
   };
 
   const handleSave = async (form: Omit<Property, 'id'> & { id?: string }) => {
