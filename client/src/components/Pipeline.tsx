@@ -213,7 +213,7 @@ function PropertyCard({
             <div className="flex items-start justify-between gap-1">
               <p className="font-semibold text-xs text-slate-800 leading-snug">{property.name}</p>
               <button
-                onClick={e => { e.stopPropagation(); onDelete(property.id); }}
+                onClick={e => { e.stopPropagation(); onDelete(property.id, property.name); }}
                 className="opacity-100 md:opacity-0 md:group-hover:opacity-100 w-6 h-6 flex items-center justify-center text-slate-300 hover:text-red-400 text-lg leading-none flex-shrink-0 transition-opacity -mt-0.5"
                 title="Delete"
               >×</button>
