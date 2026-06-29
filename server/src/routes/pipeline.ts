@@ -68,12 +68,9 @@ router.post('/', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
   try {
-    const rawId = req.params.id;
-    console.log('[PUT] req.params.id (raw):', rawId);
-    console.log('[PUT] req.body.id:', req.body.id);
-    const rows = await (await import('../sheets')).readRows(SHEET);
-    console.log('[PUT] sheet rows (col A name | col T uuid):',
-      rows.map(r => `"${r[0]}" | "${r[19] ?? ''}"`));
+    // req.params.id is the lookup key (UUID for migrated cards, property name for legacy cards).
+    // req.body.id is the client's current property.id — passed in slot 19 so updateRow can use
+    // values[0] (name) as a third fallback when req.params.id is a UUID not yet in col T.
     const prop = toObj([
       req.body.name, req.body.location, req.body.stage, req.body.dealType,
       req.body.sizeSqFt, req.body.landlord, req.body.rentPsf,
@@ -82,12 +79,10 @@ router.put('/:id', async (req, res) => {
       req.body.saleLetType ?? '', req.body.capValuePsf ?? '',
       req.body.nextAction ?? '', req.body.nextActionDate ?? '',
       req.body.operatingProfit ?? '', req.body.floorPlanUrl ?? '',
-      req.body.id ?? '', // col T: UUID from client (may be name for legacy rows)
+      req.body.id ?? '', // col T slot — may be UUID or name; updateRow normalises it
     ]);
-    const resolvedUUID = await updateRow(SHEET, rawId, toRow(prop));
-    console.log('[PUT] resolvedUUID:', resolvedUUID);
+    const resolvedUUID = await updateRow(SHEET, req.params.id, toRow(prop));
     if (resolvedUUID === null) return res.status(404).json({ error: 'Not found' });
-    // Always return the stable UUID as the id so the client can update its reference
     res.json({ ...prop, id: resolvedUUID });
   } catch (e) {
     res.status(500).json({ error: String(e) });
@@ -96,13 +91,10 @@ router.put('/:id', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
   try {
-    const rawId = req.params.id;
-    console.log('[DELETE] req.params.id (raw):', rawId);
-    const rows = await (await import('../sheets')).readRows(SHEET);
-    console.log('[DELETE] sheet rows (col A name | col T uuid):',
-      rows.map(r => `"${r[0]}" | "${r[19] ?? ''}"`));
-    const ok = await deleteRow(SHEET, rawId);
-    console.log('[DELETE] deleteRow result:', ok);
+    // nameHint is the property name sent by the client as ?name=... query param.
+    // Used as a third lookup fallback when req.params.id is a UUID but col T is still empty.
+    const nameHint = typeof req.query.name === 'string' ? req.query.name : undefined;
+    const ok = await deleteRow(SHEET, req.params.id, nameHint);
     ok ? res.json({ ok: true }) : res.status(404).json({ error: 'Not found' });
   } catch (e) {
     res.status(500).json({ error: String(e) });
