@@ -96,7 +96,13 @@ router.put('/:id', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
   try {
-    const ok = await deleteRow(SHEET, req.params.id);
+    const rawId = req.params.id;
+    console.log('[DELETE] req.params.id (raw):', rawId);
+    const rows = await (await import('../sheets')).readRows(SHEET);
+    console.log('[DELETE] sheet rows (col A name | col T uuid):',
+      rows.map(r => `"${r[0]}" | "${r[19] ?? ''}"`));
+    const ok = await deleteRow(SHEET, rawId);
+    console.log('[DELETE] deleteRow result:', ok);
     ok ? res.json({ ok: true }) : res.status(404).json({ error: 'Not found' });
   } catch (e) {
     res.status(500).json({ error: String(e) });
