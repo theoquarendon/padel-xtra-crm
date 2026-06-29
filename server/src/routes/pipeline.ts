@@ -68,6 +68,12 @@ router.post('/', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
   try {
+    const rawId = req.params.id;
+    console.log('[PUT] req.params.id (raw):', rawId);
+    console.log('[PUT] req.body.id:', req.body.id);
+    const rows = await (await import('../sheets')).readRows(SHEET);
+    console.log('[PUT] sheet rows (col A name | col T uuid):',
+      rows.map(r => `"${r[0]}" | "${r[19] ?? ''}"`));
     const prop = toObj([
       req.body.name, req.body.location, req.body.stage, req.body.dealType,
       req.body.sizeSqFt, req.body.landlord, req.body.rentPsf,
