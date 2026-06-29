@@ -76,7 +76,8 @@ router.post('/', async (req, res) => {
 });
 
 router.put('/:id', async (req, res) => {
-  if (!req.body?.name) return res.status(400).json({ error: 'name required' });
+  console.log('[PUT] params.id=', JSON.stringify(req.params.id), '| body.name=', JSON.stringify(req.body?.name), '| body keys=', Object.keys(req.body || {}));
+  if (!req.body?.name) return res.status(400).json({ error: 'name required', debug: { paramsId: req.params.id, bodyKeys: Object.keys(req.body || {}) } });
   try {
     // req.params.id is the lookup key (UUID for migrated cards, property name for legacy cards).
     // req.body.id is the client's current property.id — passed in slot 19 so updateRow can use
