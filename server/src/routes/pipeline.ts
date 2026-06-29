@@ -5,10 +5,10 @@ import { readRows, appendRow, updateRow, deleteRow } from '../sheets';
 const router = Router();
 const SHEET = 'Pipeline';
 
-// Sheet columns: A=Name | B=Location | C=Stage | D=DealType | E=SizeSqFt | F=Landlord | G=RentPsf | H=TotalRentPa | I=EstRatesPa | J=Notes | K=LastContacted | L=BrochureUrl | M=MapUrl | N=SaleLetType | O=CapValuePsf | P=NextAction | Q=NextActionDate | R=OperatingProfit | S=FloorPlanUrl
-// No separate ID column — property name (col A) is the unique identifier
+// Sheet columns: A=Name | B=Location | C=Stage | D=DealType | E=SizeSqFt | F=Landlord | G=RentPsf | H=TotalRentPa | I=EstRatesPa | J=Notes | K=LastContacted | L=BrochureUrl | M=MapUrl | N=SaleLetType | O=CapValuePsf | P=NextAction | Q=NextActionDate | R=OperatingProfit | S=FloorPlanUrl | T=ID (UUID)
+// T (col 20, index 19) is a stable UUID written on create; legacy rows without a UUID fall back to col A name.
 const toObj = (r: string[]) => ({
-  id:              r[0] || '',
+  id:              (r[19] && String(r[19]).trim()) ? String(r[19]).trim() : (r[0] || ''),
   name:            r[0] || '',
   location:        r[1] || '',
   stage:           r[2] || 'Identified',
@@ -35,6 +35,7 @@ const toRow = (p: ReturnType<typeof toObj>) => [
   p.landlord, p.rentPsf, p.totalRentPa, p.estRatesPa, p.notes,
   p.lastContacted, p.brochureUrl, p.mapUrl, p.saleLetType, p.capValuePsf,
   p.nextAction, p.nextActionDate, p.operatingProfit, p.floorPlanUrl,
+  p.id,  // col T: UUID (stable identifier)
 ];
 
 router.get('/', async (_req, res) => {
