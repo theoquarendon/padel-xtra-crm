@@ -38,19 +38,38 @@ export async function appendRow(sheetName: string, values: string[]): Promise<vo
   });
 }
 
-export async function updateRow(sheetName: string, id: string, values: string[]): Promise<boolean> {
+// Returns the stable UUID for the row (resolving legacy name-based rows lazily), or null if not found.
+export async function updateRow(sheetName: string, id: string, values: string[]): Promise<string | null> {
   const sheets = getSheets();
   const rows = await readRows(sheetName);
-  const rowIndex = rows.findIndex(r => String(r[0]).trim() === String(id).trim());
-  if (rowIndex === -1) return false;
+
+  // Primary: match by UUID stored in col T (index 19)
+  let rowIndex = rows.findIndex(r => r[19] && String(r[19]).trim() === String(id).trim());
+  let resolvedUUID = id;
+
+  if (rowIndex === -1) {
+    // Fallback: legacy rows identified by property name in col A
+    rowIndex = rows.findIndex(r => String(r[0]).trim() === String(id).trim());
+    if (rowIndex !== -1) {
+      // Reuse UUID if already written by a previous update, otherwise generate one
+      const existingUUID = rows[rowIndex][19];
+      resolvedUUID = existingUUID ? String(existingUUID).trim() : randomUUID();
+    }
+  }
+
+  if (rowIndex === -1) return null;
+
   const sheetRow = rowIndex + 2;
+  const fullValues = [...values];
+  fullValues[19] = resolvedUUID; // ensure UUID is in col T
+
   await sheets.spreadsheets.values.update({
     spreadsheetId: SPREADSHEET_ID,
     range: `${sheetName}!A${sheetRow}:Z${sheetRow}`,
     valueInputOption: 'RAW',
-    requestBody: { values: [values] },
+    requestBody: { values: [fullValues] },
   });
-  return true;
+  return resolvedUUID;
 }
 
 export async function deleteRow(sheetName: string, id: string): Promise<boolean> {
