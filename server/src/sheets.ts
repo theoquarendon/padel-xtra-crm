@@ -78,15 +78,16 @@ export async function updateRow(sheetName: string, id: string, values: string[])
   return resolvedUUID;
 }
 
-export async function deleteRow(sheetName: string, id: string): Promise<boolean> {
+export async function deleteRow(sheetName: string, id: string, nameHint?: string): Promise<boolean> {
   const sheets = getSheets();
   const rows = await readRows(sheetName);
 
-  // Primary: match by UUID in col T; fallback: legacy name in col A
+  // Lookup 1: UUID in col T
   let rowIndex = rows.findIndex(r => r[19] && String(r[19]).trim() === String(id).trim());
-  if (rowIndex === -1) {
-    rowIndex = rows.findIndex(r => String(r[0]).trim() === String(id).trim());
-  }
+  // Lookup 2: id as property name in col A (legacy)
+  if (rowIndex === -1) rowIndex = rows.findIndex(r => String(r[0]).trim() === String(id).trim());
+  // Lookup 3: property name hint from query param (migration gap — client has UUID, col T still empty)
+  if (rowIndex === -1 && nameHint) rowIndex = rows.findIndex(r => String(r[0]).trim() === String(nameHint).trim());
   if (rowIndex === -1) return false;
 
   const spreadsheet = await sheets.spreadsheets.get({ spreadsheetId: SPREADSHEET_ID });
