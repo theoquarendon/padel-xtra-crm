@@ -1283,10 +1283,10 @@ export default function Pipeline() {
     setProperties(prev => prev.map(p => p.id === id ? sanitiseProp(serverProp) : p));
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: string, name: string) => {
     if (!confirm('Delete this property?')) return;
     try {
-      await api.pipeline.remove(encodeURIComponent(id));
+      await api.pipeline.remove(encodeURIComponent(id), name);
       setProperties(prev => prev.filter(p => p.id !== id));
     } catch (e) {
       alert('Failed to delete: ' + (e as Error).message);
