@@ -1,6 +1,6 @@
 import { randomUUID } from 'crypto';
 import { Router } from 'express';
-import { readRows, appendRow, updateRow, deleteRow } from '../sheets';
+import { appendRow, updateRow, deleteRow, readRows } from '../sheets';
 
 const router = Router();
 const SHEET = 'Pipeline';
