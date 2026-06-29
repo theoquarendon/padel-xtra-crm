@@ -84,7 +84,8 @@ router.put('/:id', async (req, res) => {
       req.body.operatingProfit ?? '', req.body.floorPlanUrl ?? '',
       req.body.id ?? '', // col T: UUID from client (may be name for legacy rows)
     ]);
-    const resolvedUUID = await updateRow(SHEET, req.params.id, toRow(prop));
+    const resolvedUUID = await updateRow(SHEET, rawId, toRow(prop));
+    console.log('[PUT] resolvedUUID:', resolvedUUID);
     if (resolvedUUID === null) return res.status(404).json({ error: 'Not found' });
     // Always return the stable UUID as the id so the client can update its reference
     res.json({ ...prop, id: resolvedUUID });
