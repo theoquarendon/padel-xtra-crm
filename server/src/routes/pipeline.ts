@@ -94,6 +94,7 @@ router.put('/:id', async (req, res) => {
       req.body.nextAction ?? '', req.body.nextActionDate ?? '',
       req.body.operatingProfit ?? '', req.body.floorPlanUrl ?? '',
       req.body.id ?? '', // col T slot — may be UUID or name; updateRow normalises it
+      req.body.demographicReportUrl ?? '',
     ]);
     const resolvedUUID = await updateRow(SHEET, req.params.id, toRow(prop));
     console.log('[PUT] resolvedUUID=', resolvedUUID, '| lookup id=', req.params.id, '| name=', prop.name);
