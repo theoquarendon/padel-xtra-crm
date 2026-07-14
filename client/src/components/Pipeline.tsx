@@ -864,6 +864,34 @@ function PropertyForm({
       </div>
 
       <div>
+        <label className={labelCls}>Demographic Report</label>
+        <div className="flex gap-2 items-stretch">
+          <input
+            type="url"
+            value={form.demographicReportUrl}
+            onChange={set('demographicReportUrl')}
+            className={inputCls + ' flex-1'}
+            placeholder="https://..."
+          />
+          {form.demographicReportUrl && (
+            <a
+              href={form.demographicReportUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Open demographic report"
+              className="flex-shrink-0 w-10 flex items-center justify-center rounded-lg border transition-colors cursor-pointer"
+              style={{ borderColor: '#a5b4fc', backgroundColor: '#eef2ff', color: '#4f46e5' }}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+            </a>
+          )}
+        </div>
+      </div>
+
+      <div>
         <label className={labelCls}>Floor Plan URL</label>
         <div className="flex gap-2 items-stretch">
           <input
