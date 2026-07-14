@@ -69,6 +69,7 @@ router.post('/', async (req, res) => {
       req.body.nextAction ?? '', req.body.nextActionDate ?? '',
       req.body.operatingProfit ?? '', req.body.floorPlanUrl ?? '',
       randomUUID(), // col T: generate stable UUID on creation
+      req.body.demographicReportUrl ?? '',
     ]);
     await appendRow(SHEET, toRow(prop));
     res.json(prop);
