@@ -293,7 +293,7 @@ function PropertyCard({
 
 
             {/* Link icons — only shown when URLs exist */}
-            {(property.brochureUrl || property.mapUrl || property.floorPlanUrl) && (
+            {(property.brochureUrl || property.mapUrl || property.floorPlanUrl || property.demographicReportUrl) && (
               <div className="flex items-center gap-1.5 mt-1.5">
                 {property.brochureUrl && (
                   <button
