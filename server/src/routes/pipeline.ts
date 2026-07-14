@@ -36,6 +36,7 @@ const toObj = (r: string[]) => ({
   nextActionDate:  r[16] || '',
   operatingProfit: r[17] || '',
   floorPlanUrl:    r[18] || '',
+  demographicReportUrl: r[20] || '',
 });
 
 const toRow = (p: ReturnType<typeof toObj>) => [
@@ -44,6 +45,7 @@ const toRow = (p: ReturnType<typeof toObj>) => [
   p.lastContacted, p.brochureUrl, p.mapUrl, p.saleLetType, p.capValuePsf,
   p.nextAction, p.nextActionDate, p.operatingProfit, p.floorPlanUrl,
   p.id,  // col T: UUID (stable identifier)
+  p.demographicReportUrl, // col U
 ];
 
 router.get('/', async (_req, res) => {
