@@ -89,6 +89,7 @@ function sanitiseProp(p: import('../types').Property): import('../types').Proper
     brochureUrl:    toStr(p.brochureUrl),
     mapUrl:         toStr(p.mapUrl),
     floorPlanUrl:   toStr(p.floorPlanUrl),
+    demographicReportUrl: toStr(p.demographicReportUrl),
     saleLetType:    toStr(p.saleLetType),
     capValuePsf:    toStr(p.capValuePsf),
     nextAction:      toStr(p.nextAction),
