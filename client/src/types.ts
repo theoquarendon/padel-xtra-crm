@@ -41,6 +41,7 @@ export interface Property {
   brochureUrl: string;
   mapUrl: string;
   floorPlanUrl: string;
+  demographicReportUrl: string;
   saleLetType: string;
   capValuePsf: string;
   nextAction: string;
