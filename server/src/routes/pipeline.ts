@@ -13,7 +13,7 @@ function errMsg(e: unknown): string {
 const router = Router();
 const SHEET = 'Pipeline';
 
-// Sheet columns: A=Name | B=Location | C=Stage | D=DealType | E=SizeSqFt | F=Landlord | G=RentPsf | H=TotalRentPa | I=EstRatesPa | J=Notes | K=LastContacted | L=BrochureUrl | M=MapUrl | N=SaleLetType | O=CapValuePsf | P=NextAction | Q=NextActionDate | R=OperatingProfit | S=FloorPlanUrl | T=ID (UUID)
+// Sheet columns: A=Name | B=Location | C=Stage | D=DealType | E=SizeSqFt | F=Landlord | G=RentPsf | H=TotalRentPa | I=EstRatesPa | J=Notes | K=LastContacted | L=BrochureUrl | M=MapUrl | N=SaleLetType | O=CapValuePsf | P=NextAction | Q=NextActionDate | R=OperatingProfit | S=FloorPlanUrl | T=ID (UUID) | U=DemographicReportUrl
 // T (col 20, index 19) is a stable UUID written on create; legacy rows without a UUID fall back to col A name.
 const toObj = (r: string[]) => ({
   id:              (r[19] && String(r[19]).trim()) ? String(r[19]).trim() : (r[0] || ''),
